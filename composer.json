@@ -1,0 +1,33 @@
+{
+  "name": "1001pharmacies/kali-client",
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "florianajir",
+      "email": "florianajir@gmail.com"
+    }
+  ],
+  "require": {
+    "php"                      : ">=5.3.",
+    "guzzle/guzzle"            : "3.9.3"
+  },
+  "require-dev": {
+    "symfony/symfony"          : "2.3.*",
+    "symfony/event-dispatcher" : "2.3.*",
+    "phpunit/phpunit"          : "4.*",
+    "phpmd/phpmd"              : "2.*",
+    "squizlabs/php_codesniffer": "2.*",
+    "sebastian/phpcpd"         : "2.*",
+    "phing/phing"              : "~2.9"
+  },
+  "autoload": {
+    "psr-0": {
+      "Meup\\Bundle\\KaliClientBundle": ""
+    }
+  },
+  "target-dir": "Meup/Bundle/KaliClientBundle",
+  "config": {
+    "bin-dir": "bin"
+  }
+}
