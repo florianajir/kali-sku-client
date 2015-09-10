@@ -2,8 +2,6 @@
 
 namespace Meup\Bundle\KaliClientBundle\Provider;
 
-use Guzzle\Http\Message\Response;
-
 /**
  * Interface KaliProviderInterface
  *
