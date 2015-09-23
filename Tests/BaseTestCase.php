@@ -8,10 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Meup\Bundle\KaliClientBundle;
+namespace Meup\Bundle\KaliClientBundle\Tests;
 
-use Symfony\Component\HttpKernel\Bundle\Bundle;
-
-class MeupKaliClientBundle extends Bundle
+/**
+ * Class BaseTestCase
+ *
+ * @author Loïc AMBROSINI <loic@1001pharmacies.com>
+ */
+abstract class BaseTestCase extends \PHPUnit_Framework_TestCase
 {
 }

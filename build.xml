@@ -83,6 +83,7 @@
             <fileset dir=".">
                 <include name="**/*.php"/>
                 <exclude name="vendor/"/>
+                <exclude name=".*/"/>
             </fileset>
         </phplint>
     </target>
@@ -99,6 +100,7 @@
             <fileset dir=".">
                 <include name="**/*.php"/>
                 <exclude name="vendor/"/>
+                <exclude name=".*/"/>
             </fileset>
         </phplint>
     </target>
@@ -140,6 +142,7 @@
             <fileset dir="./">
                 <include name="**/*.php" />
                 <exclude name="vendor/" />
+                <exclude name=".*/"/>
             </fileset>
         </phpcodesniffer>
     </target>
@@ -150,6 +153,7 @@
             <fileset dir="./">
                 <include name="**/*.php" />
                 <exclude name="vendor/" />
+                <exclude name=".*/"/>
             </fileset>
             <formatter type="checkstyle"
                        outfile="${builddir}/reports/checkstyle.xml" />
@@ -162,6 +166,7 @@
         <phpmd>
             <fileset dir=".">
                 <exclude name="vendor/" />
+                <exclude name=".*/"/>
             </fileset>
         </phpmd>
     </target>
@@ -172,6 +177,7 @@
         <phpmd>
             <fileset dir=".">
                 <exclude name="vendor/" />
+                <exclude name=".*/"/>
             </fileset>
             <formatter type="xml" outfile="${builddir}/reports/pmd.xml"/>
         </phpmd>
@@ -183,6 +189,7 @@
         <phpcpd>
             <fileset dir=".">
                 <exclude name="vendor/" />
+                <exclude name=".*/"/>
                 <include name="**/*.php" />
             </fileset>
         </phpcpd>
@@ -194,6 +201,7 @@
         <phpcpd>
             <fileset dir=".">
                 <exclude name="vendor/" />
+                <exclude name=".*/"/>
                 <include name="**/*.php" />
             </fileset>
             <formatter type="pmd" outfile="${builddir}/reports/cpd.xml"/>
@@ -206,6 +214,7 @@
         <phpdepend>
             <fileset dir="./">
                 <exclude name="vendor/" />
+                <exclude name=".*/"/>
                 <include name="**/*.php" />
             </fileset>
             <logger type="jdepend-xml" outfile="${builddir}/reports/pdepend.xml"/>
@@ -241,6 +250,7 @@
                 <include name="**/*.php" />
                 <include name="*.php" />
                 <exclude name="vendor/" />
+                <exclude name=".*/"/>
             </fileset>
         </phploc>
     </target>
@@ -257,6 +267,7 @@
                 <include name="**/*.php" />
                 <include name="*.php" />
                 <exclude name="vendor/" />
+                <exclude name=".*/"/>
             </fileset>
         </phploc>
     </target>
