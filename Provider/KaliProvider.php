@@ -74,7 +74,7 @@ class KaliProvider implements KaliProviderInterface
         $this->secretKey = $secretKey;
         $this->server = $server;
         $this->client->setBaseUrl($server);
-        //$this->client->setSslVerification($certificateAuthority);
+        $this->client->setSslVerification($certificateAuthority);
     }
 
     /**
