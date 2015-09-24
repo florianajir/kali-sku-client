@@ -42,7 +42,10 @@ class SkuManager implements SkuManagerInterface
      */
     public function get($sku)
     {
-        // TODO: Implement get() method.
+        return $this
+            ->provider
+            ->get($sku)
+        ;
     }
 
     /**
@@ -52,6 +55,13 @@ class SkuManager implements SkuManagerInterface
      */
     public function create(SkuInterface $sku)
     {
-        // TODO: Implement create() method.
+        return $this
+            ->provider
+            ->post(
+                $sku->getProject(),
+                $sku->getForeignType(),
+                $sku->getForeignId()
+            )
+        ;
     }
 }

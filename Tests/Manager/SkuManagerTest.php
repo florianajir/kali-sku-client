@@ -13,24 +13,72 @@ namespace Meup\Bundle\KaliClientBundle\Tests\Manager;
 use Meup\Bundle\KaliClientBundle\Manager\SkuManager;
 use Meup\Bundle\KaliClientBundle\Model\Sku;
 use Meup\Bundle\KaliClientBundle\Provider\KaliProvider;
-use Meup\Bundle\KaliClientBundle\Tests\BaseTestCase;
 
-class SkuManagerTest extends BaseTestCase
+/**
+ * Class SkuManagerTest
+ *
+ * @author Loïc AMBROSINI <loic@1001pharmacies.com>
+ */
+class SkuManagerTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetSku()
     {
         $provider = $this->getKaliProviderMock();
-        $manager = new SkuManager($provider);
+        $provider
+            ->expects($this->any())
+            ->method('get')
+            ->with('0123456789')
+            ->willReturn($this->getSkuModel())
+        ;
 
-        $manager->get('0123456789');
+        $manager = new SkuManager($provider);
+        $sku = $manager->get('0123456789');
+
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\SkuInterface', $sku);
+    }
+
+    public function testGetNotFoundSku()
+    {
+        $provider = $this->getKaliProviderMock();
+        $provider
+            ->expects($this->any())
+            ->method('get')
+            ->with('0123456789')
+            ->willReturn(null)
+        ;
+
+        $manager = new SkuManager($provider);
+        $sku = $manager->get('0123456789');
+
+        $this->assertNull($sku);
     }
 
     public function testCreateSku()
     {
-        $provider = $this->getKaliProviderMock();
-        $manager = new SkuManager($provider);
+        $sku = $this->getSkuModel();
+        $sku
+            ->setProject('testProject')
+            ->setforeignType('testType')
+            ->setForeignId('testId')
+        ;
 
-        $manager->create($this->getSkuModel());
+        $provider = $this->getKaliProviderMock();
+        $provider
+            ->expects($this->any())
+            ->method('post')
+            ->with(
+                $sku->getProject(),
+                $sku->getForeignType(),
+                $sku->getForeignId()
+            )
+            ->willReturn($sku)
+        ;
+
+        $manager = new SkuManager($provider);
+        $resultSku = $manager->create($sku);
+
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\SkuInterface', $resultSku);
+
     }
 
     /**

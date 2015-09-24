@@ -64,19 +64,17 @@ class KaliProvider implements KaliProviderInterface
      */
     public function __construct(
         ClientInterface $client,
-        LoggerInterface $logger,
         $server,
         $publicKey,
         $secretKey,
         $certificateAuthority = false
     ) {
         $this->client = $client;
-        $this->logger = $logger;
         $this->publicKey = $publicKey;
         $this->secretKey = $secretKey;
         $this->server = $server;
         $this->client->setBaseUrl($server);
-        $this->client->setSslVerification($certificateAuthority);
+        //$this->client->setSslVerification($certificateAuthority);
     }
 
     /**
@@ -98,7 +96,9 @@ class KaliProvider implements KaliProviderInterface
         );
         $data = $request->send()->json();
         if (empty($data['access_token'])) {
-            $this->logger->error('KaliClient::authenticate');
+            if ($this->logger) {
+                $this->logger->error('KaliClient::authenticate');
+            }
             throw new InvalidArgumentException('Failed to authenticate');
         } else {
             $this->token = $data['access_token'];
@@ -108,7 +108,7 @@ class KaliProvider implements KaliProviderInterface
     /**
      * @return array
      */
-    private function getAuthorizationHeader()
+    public function getAuthorizationHeader()
     {
         if (empty($this->token)) {
             $this->authenticate();
@@ -131,23 +131,27 @@ class KaliProvider implements KaliProviderInterface
 
         $response = $request->send();
 
-        $this->logger->debug(
-            'KaliClient::get',
-            array(
-                'token'    => $this->token,
-                'url'      => $request->getUrl(),
-                'status'   => $response->getStatusCode(),
-                'response' => $response->json()
-            )
-        );
-
-        if ($response->getStatusCode() === 400) {
-            $this->logger->error(
-                'KaliClient::get failed. Sku not found',
+        if ($this->logger) {
+            $this->logger->debug(
+                'KaliClient::get',
                 array(
-                    'sku' => $sku,
+                    'token' => $this->token,
+                    'url' => $request->getUrl(),
+                    'status' => $response->getStatusCode(),
+                    'response' => $response->json()
                 )
             );
+        }
+
+        if ($response->getStatusCode() === 400) {
+            if ($this->logger) {
+                $this->logger->error(
+                    'KaliClient::get failed. Sku not found',
+                    array(
+                        'sku' => $sku,
+                    )
+                );
+            }
             throw new InvalidArgumentException('sku not found');
         }
 
@@ -166,5 +170,13 @@ class KaliProvider implements KaliProviderInterface
      */
     public function delete($uri = null, $headers = null, $body = null, array $options = array())
     {
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 }

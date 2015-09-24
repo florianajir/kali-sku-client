@@ -12,7 +12,6 @@ namespace Meup\Bundle\KaliClientBundle\Tests\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Meup\Bundle\KaliClientBundle\DependencyInjection\MeupKaliClientExtension;
-use Meup\Bundle\KaliClientBundle\Tests\BaseTestCase;
 use Meup\Bundle\KaliClientBundle\DependencyInjection\Configuration;
 
 /**
@@ -20,7 +19,7 @@ use Meup\Bundle\KaliClientBundle\DependencyInjection\Configuration;
  *
  * @author Loïc AMBROSINI <loic@1001pharmacies.com>
  */
-class ConfigurationTest extends BaseTestCase
+class ConfigurationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var MeupKaliClientExtension

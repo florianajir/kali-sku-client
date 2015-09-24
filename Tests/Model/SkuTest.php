@@ -11,9 +11,13 @@
 namespace Meup\Bundle\KaliClientBundle\Tests\Model;
 
 use Meup\Bundle\KaliClientBundle\Model\Sku;
-use Meup\Bundle\KaliClientBundle\Tests\BaseTestCase;
 
-class SkuTest extends BaseTestCase
+/**
+ * Class SkuTest
+ *
+ * @author Loïc AMBROSINI <loic@1001pharmacies.com>
+ */
+class SkuTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()
     {
