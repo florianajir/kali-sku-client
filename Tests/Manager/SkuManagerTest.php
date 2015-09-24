@@ -34,7 +34,7 @@ class SkuManagerTest extends \PHPUnit_Framework_TestCase
         $manager = new SkuManager($provider);
         $sku = $manager->get('0123456789');
 
-        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\SkuInterface', $sku);
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $sku);
     }
 
     public function testGetNotFoundSku()
@@ -77,7 +77,7 @@ class SkuManagerTest extends \PHPUnit_Framework_TestCase
         $manager = new SkuManager($provider);
         $resultSku = $manager->create($sku);
 
-        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\SkuInterface', $resultSku);
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $resultSku);
 
     }
 
