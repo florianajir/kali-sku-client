@@ -18,6 +18,7 @@ use Psr\Log\LoggerInterface;
  * Kali manager for Kali API v1.0
  *
  * @author Florian Ajir <florian@1001pharmacies.com>
+ * @author Loïc Ambrosini <loic@1001pharmacies.com>
  */
 class KaliProvider implements KaliProviderInterface
 {
@@ -134,9 +135,7 @@ class KaliProvider implements KaliProviderInterface
             $options
         );
 
-        $response = $request->send();
-
-        return $response->json();
+        return $request->send();
     }
 
     /**
@@ -155,9 +154,7 @@ class KaliProvider implements KaliProviderInterface
             $options
         );
 
-        $response = $request->send();
-
-        return $response->json();
+        return $request->send();
     }
 
     /**
@@ -176,9 +173,7 @@ class KaliProvider implements KaliProviderInterface
             $options
         );
 
-        $response = $request->send();
-
-        return $response->json();
+        return $request->send();
     }
 
     /**
@@ -203,9 +198,7 @@ class KaliProvider implements KaliProviderInterface
             $options
         );
 
-        $response = $request->send();
-
-        return $response->json();
+        return $request->send();
     }
 
     /**
@@ -224,9 +217,7 @@ class KaliProvider implements KaliProviderInterface
             $options
         );
 
-        $response = $request->send();
-
-        return $response->json();
+        return $request->send();
     }
 
     /**

@@ -9,62 +9,73 @@
  */
 
 namespace Meup\Bundle\KaliClientBundle\Provider;
+use Guzzle\Http\Message\Response;
 
 /**
  * Interface KaliProviderInterface
  *
  * @author <florian@1001pharmacies.com>
+ * @author Loïc Ambrosini <loic@1001pharmacies.com>
  */
 interface KaliProviderInterface
 {
     /**
-     * Execute a GET request to get sku details
+     * Execute a GET request
      *
-     * @param string $sku
+     * @param string  $uri
+     * @param array   $headers
+     * @param string  $body
+     * @param array   $options
      *
-     * @return array
+     * @return Response
      */
-    public function get($uri = null, $headers = null, $postBody = null, array $options = array());
+    public function get($uri = null, $headers = null, $body = null, array $options = array());
 
     /**
-     * Execute a POST request to create sku and return sku code
+     * Execute a POST request
      *
-     * @param string $project
-     * @param string $type
-     * @param int    $id
+     * @param string  $uri
+     * @param array   $headers
+     * @param string  $body
+     * @param array   $options
      *
-     * @return array
+     * @return Response
      */
-    public function post($uri = null, $headers = null, $postBody = null, array $options = array());
+    public function post($uri = null, $headers = null, $body = null, array $options = array());
 
     /**
-     * Execute a POST request to create sku and return sku code
+     * Execute a PUT request
      *
-     * @param string $project
-     * @param string $type
-     * @param int    $id
+     * @param string  $uri
+     * @param array   $headers
+     * @param string  $body
+     * @param array   $options
      *
-     * @return array
+     * @return Response
      */
-    public function put($uri = null, $headers = null, $postBody = null, array $options = array());
+    public function put($uri = null, $headers = null, $body = null, array $options = array());
 
     /**
-     * Execute a POST request to create sku and return sku code
+     * Execute a PATCH request
      *
-     * @param string $project
-     * @param string $type
-     * @param int    $id
+     * @param string  $uri
+     * @param array   $headers
+     * @param string  $body
+     * @param array   $options
      *
-     * @return array
+     * @return Response
      */
-    public function patch($uri = null, $headers = null, $postBody = null, array $options = array());
+    public function patch($uri = null, $headers = null, $body = null, array $options = array());
 
     /**
      * Execute a DELETE request to
      *
-     * @param string $sku
+     * @param string  $uri
+     * @param array   $headers
+     * @param string  $body
+     * @param array   $options
      *
-     * @return bool
+     * @return Response
      */
-    public function delete($uri = null, $headers = null, $postBody = null, array $options = array());
+    public function delete($uri = null, $headers = null, $body = null, array $options = array());
 }

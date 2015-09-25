@@ -15,6 +15,11 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
+/**
+ * Class MeupKaliClientExtension
+ *
+ * @author Loïc AMBROSINI <loic@1001pharmacies.com>
+ */
 class MeupKaliClientExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)

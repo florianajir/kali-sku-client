@@ -13,11 +13,13 @@ namespace Meup\Bundle\KaliClientBundle\Manager;
 use Meup\Bundle\KaliClientBundle\Model\SkuInterface;
 use Meup\Bundle\KaliClientBundle\Provider\KaliProvider;
 use Meup\Bundle\KaliClientBundle\Provider\KaliProviderInterface;
+use Symfony\Component\Serializer\Serializer;
 
 /**
  * Sku manager
  *
  * @author Florian Ajir <florian@1001pharmacies.com>
+ * @author Loïc Ambrosini <loic@1001pharmacies.com>
  */
 class SkuManager implements SkuManagerInterface
 {
@@ -43,12 +45,14 @@ class SkuManager implements SkuManagerInterface
      */
     public function get($sku)
     {
-        return $this
+        $response = $this
             ->provider
             ->get(
                 KaliProvider::API_ENDPOINT . '/' . $sku
             )
         ;
+
+        return $response->json();
     }
 
     /**
@@ -58,7 +62,7 @@ class SkuManager implements SkuManagerInterface
      */
     public function create(SkuInterface $sku)
     {
-        return $this
+        $response = $this
             ->provider
             ->post(
                 KaliProvider::API_ENDPOINT . '/',
@@ -72,6 +76,8 @@ class SkuManager implements SkuManagerInterface
                 )
             )
         ;
+
+        return $response->json();
     }
 
     /**
@@ -81,7 +87,7 @@ class SkuManager implements SkuManagerInterface
      */
     public function update(SkuInterface $sku)
     {
-        return $this
+        $response = $this
             ->provider
             ->put(
                 KaliProvider::API_ENDPOINT . '/' . $sku->getCode(),
@@ -95,6 +101,8 @@ class SkuManager implements SkuManagerInterface
                 )
             )
         ;
+
+        return $response->json();
     }
 
     /**
@@ -104,11 +112,13 @@ class SkuManager implements SkuManagerInterface
      */
     public function delete(SkuInterface $sku)
     {
-        return $this
+        $response = $this
             ->provider
             ->delete(
                 KaliProvider::API_ENDPOINT . '/' . $sku->getCode()
             )
         ;
+
+        return $response->json();
     }
 }
