@@ -106,11 +106,11 @@ class SkuManager implements SkuManagerInterface
     }
 
     /**
-     * @param SkuInterface $sku
+     * @param string $sku
      *
      * @return SkuInterface
      */
-    public function delete(SkuInterface $sku)
+    public function delete($sku)
     {
         $response = $this
             ->provider

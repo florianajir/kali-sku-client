@@ -42,7 +42,7 @@ interface SkuManagerInterface
     public function update(SkuInterface $sku);
 
     /**
-     * @param SkuInterface $sku
+     * @param string $sku
      *
      * @return SkuInterface
      */

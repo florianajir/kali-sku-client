@@ -539,20 +539,20 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v2.3.32",
+            "version": "v2.3.33",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "221da6edaf6514eca8efd728c74bf3dbf133a6fd"
+                "reference": "3b8a8ee48e8ad81cb5d9d85b909bbd28011423a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/221da6edaf6514eca8efd728c74bf3dbf133a6fd",
-                "reference": "221da6edaf6514eca8efd728c74bf3dbf133a6fd",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/3b8a8ee48e8ad81cb5d9d85b909bbd28011423a1",
+                "reference": "3b8a8ee48e8ad81cb5d9d85b909bbd28011423a1",
                 "shasum": ""
             },
             "require": {
-                "doctrine/common": "~2.3",
+                "doctrine/common": "~2.4",
                 "php": ">=5.3.3",
                 "psr/log": "~1.0",
                 "twig/twig": "~1.20|~2.0"
@@ -598,8 +598,8 @@
             },
             "require-dev": {
                 "doctrine/data-fixtures": "1.0.*",
-                "doctrine/dbal": "~2.2",
-                "doctrine/orm": "~2.2,>=2.2.3",
+                "doctrine/dbal": "~2.4",
+                "doctrine/orm": "~2.4,>=2.4.5",
                 "ircmaxell/password-compat": "~1.0",
                 "monolog/monolog": "~1.3",
                 "ocramius/proxy-manager": "~0.3.1",
@@ -643,20 +643,20 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2015-09-01 15:40:52"
+            "time": "2015-09-25 09:08:49"
         },
         {
             "name": "twig/twig",
-            "version": "v1.21.2",
+            "version": "v1.22.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "ddce1136beb8db29b9cd7dffa8ab518b978c9db3"
+                "reference": "79249fc8c9ff62e41e217e0c630e2e00bcadda6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/ddce1136beb8db29b9cd7dffa8ab518b978c9db3",
-                "reference": "ddce1136beb8db29b9cd7dffa8ab518b978c9db3",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/79249fc8c9ff62e41e217e0c630e2e00bcadda6a",
+                "reference": "79249fc8c9ff62e41e217e0c630e2e00bcadda6a",
                 "shasum": ""
             },
             "require": {
@@ -669,7 +669,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.21-dev"
+                    "dev-master": "1.22-dev"
                 }
             },
             "autoload": {
@@ -704,7 +704,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2015-09-09 05:28:51"
+            "time": "2015-09-22 13:59:32"
         }
     ],
     "packages-dev": [
@@ -764,26 +764,27 @@
         },
         {
             "name": "pdepend/pdepend",
-            "version": "2.0.3",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pdepend/pdepend.git",
-                "reference": "dc582a3c0180664a8fbfc5a34efaf4cc13fccc60"
+                "reference": "a77b6bede0afdd232155eb6f1de0b2826bcf2803"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pdepend/pdepend/zipball/dc582a3c0180664a8fbfc5a34efaf4cc13fccc60",
-                "reference": "dc582a3c0180664a8fbfc5a34efaf4cc13fccc60",
+                "url": "https://api.github.com/repos/pdepend/pdepend/zipball/a77b6bede0afdd232155eb6f1de0b2826bcf2803",
+                "reference": "a77b6bede0afdd232155eb6f1de0b2826bcf2803",
                 "shasum": ""
             },
             "require": {
-                "symfony/config": "@stable",
-                "symfony/dependency-injection": "@stable",
-                "symfony/filesystem": "@stable"
+                "php": ">=5.3.7",
+                "symfony/config": "^2.3.0",
+                "symfony/dependency-injection": "^2.3.0",
+                "symfony/filesystem": "^2.3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "3.*@stable",
-                "squizlabs/php_codesniffer": "@stable"
+                "phpunit/phpunit": "^4.0.0",
+                "squizlabs/php_codesniffer": "^2.0.0"
             },
             "bin": [
                 "src/bin/pdepend"
@@ -799,7 +800,7 @@
                 "BSD-3-Clause"
             ],
             "description": "Official version of pdepend to be handled with Composer",
-            "time": "2014-10-08 06:54:50"
+            "time": "2015-09-24 14:17:05"
         },
         {
             "name": "phing/phing",
@@ -944,45 +945,68 @@
         },
         {
             "name": "phpmd/phpmd",
-            "version": "2.1.1",
+            "version": "2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpmd/phpmd.git",
-                "reference": "0a1a12f6867d0e676718fd1ac287e0c34b956fb2"
+                "reference": "08b5bcd454a7148579b68931fc500d824afd3bb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpmd/phpmd/zipball/0a1a12f6867d0e676718fd1ac287e0c34b956fb2",
-                "reference": "0a1a12f6867d0e676718fd1ac287e0c34b956fb2",
+                "url": "https://api.github.com/repos/phpmd/phpmd/zipball/08b5bcd454a7148579b68931fc500d824afd3bb5",
+                "reference": "08b5bcd454a7148579b68931fc500d824afd3bb5",
                 "shasum": ""
             },
             "require": {
-                "pdepend/pdepend": "2.0.*",
-                "php": ">=5.3.0",
-                "symfony/config": "@stable",
-                "symfony/dependency-injection": "@stable",
-                "symfony/filesystem": "@stable"
+                "pdepend/pdepend": "~2.0",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.0",
+                "squizlabs/php_codesniffer": "^2.0"
             },
             "bin": [
                 "src/bin/phpmd"
             ],
-            "type": "library",
+            "type": "project",
             "autoload": {
                 "psr-0": {
-                    "PHPMD\\": "src/main/php",
-                    "PDepend\\": "vendor/pdepend/pdepend/src/main/php/"
+                    "PHPMD\\": "src/main/php"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
-            "include-path": [
-                "../../pdepend/pdepend/src/main/php",
-                "src/main/php"
-            ],
             "license": [
                 "BSD-3-Clause"
             ],
-            "description": "Official version of PHPMD handled with Composer.",
-            "time": "2014-09-09 18:47:29"
+            "authors": [
+                {
+                    "name": "Manuel Pichler",
+                    "email": "github@manuel-pichler.de",
+                    "homepage": "https://github.com/manuelpichler",
+                    "role": "Project Founder"
+                },
+                {
+                    "name": "Other contributors",
+                    "homepage": "https://github.com/phpmd/phpmd/graphs/contributors",
+                    "role": "Contributors"
+                },
+                {
+                    "name": "Marc Würth",
+                    "email": "ravage@bluewin.ch",
+                    "homepage": "https://github.com/ravage84",
+                    "role": "Project Maintainer"
+                }
+            ],
+            "description": "PHPMD is a spin-off project of PHP Depend and aims to be a PHP equivalent of the well known Java tool PMD.",
+            "homepage": "http://phpmd.org/",
+            "keywords": [
+                "mess detection",
+                "mess detector",
+                "pdepend",
+                "phpmd",
+                "pmd"
+            ],
+            "time": "2015-09-24 14:37:49"
         },
         {
             "name": "phpspec/prophecy",
@@ -1046,16 +1070,16 @@
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "2.2.2",
+            "version": "2.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "2d7c03c0e4e080901b8f33b2897b0577be18a13c"
+                "reference": "ef1ca6835468857944d5c3b48fa503d5554cff2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2d7c03c0e4e080901b8f33b2897b0577be18a13c",
-                "reference": "2d7c03c0e4e080901b8f33b2897b0577be18a13c",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/ef1ca6835468857944d5c3b48fa503d5554cff2f",
+                "reference": "ef1ca6835468857944d5c3b48fa503d5554cff2f",
                 "shasum": ""
             },
             "require": {
@@ -1104,7 +1128,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-08-04 03:42:39"
+            "time": "2015-09-14 06:51:16"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -1237,16 +1261,16 @@
         },
         {
             "name": "phpunit/php-token-stream",
-            "version": "1.4.6",
+            "version": "1.4.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "3ab72c62e550370a6cd5dc873e1a04ab57562f5b"
+                "reference": "3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/3ab72c62e550370a6cd5dc873e1a04ab57562f5b",
-                "reference": "3ab72c62e550370a6cd5dc873e1a04ab57562f5b",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da",
+                "reference": "3144ae21711fb6cac0b1ab4cbe63b75ce3d4e8da",
                 "shasum": ""
             },
             "require": {
@@ -1282,20 +1306,20 @@
             "keywords": [
                 "tokenizer"
             ],
-            "time": "2015-08-16 08:51:00"
+            "time": "2015-09-15 10:49:45"
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.6",
+            "version": "4.8.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "2246830f4a1a551c67933e4171bf2126dc29d357"
+                "reference": "73fad41adb5b7bc3a494bb930d90648df1d5e74b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2246830f4a1a551c67933e4171bf2126dc29d357",
-                "reference": "2246830f4a1a551c67933e4171bf2126dc29d357",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/73fad41adb5b7bc3a494bb930d90648df1d5e74b",
+                "reference": "73fad41adb5b7bc3a494bb930d90648df1d5e74b",
                 "shasum": ""
             },
             "require": {
@@ -1354,7 +1378,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-08-24 04:09:38"
+            "time": "2015-09-20 12:56:44"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
