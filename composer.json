@@ -10,7 +10,8 @@
   ],
   "require": {
     "php"                      : ">=5.3.",
-    "guzzle/guzzle"            : "3.9.3"
+    "guzzle/guzzle"            : "3.9.3",
+    "jms/serializer-bundle"    : "1.*"
   },
   "require-dev": {
     "symfony/symfony"          : "2.3.*",

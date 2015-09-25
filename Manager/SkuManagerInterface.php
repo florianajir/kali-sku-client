@@ -46,5 +46,5 @@ interface SkuManagerInterface
      *
      * @return SkuInterface
      */
-    public function delete(SkuInterface $sku);
+    public function delete($sku);
 }

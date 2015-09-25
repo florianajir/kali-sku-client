@@ -97,4 +97,24 @@ interface SkuInterface
      * @return bool
      */
     public function isActive();
+
+    /**
+     * String representation of object
+     *
+     * @link http://php.net/manual/en/serializable.serialize.php
+     *
+     * @return string the json representation of the object
+     */
+    public function serialize();
+
+    /**
+     * Constructs the object
+     *
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     *
+     * @param string|array $data The string representation of the object.
+     *
+     * @return self
+     */
+    public function unserialize($data);
 }

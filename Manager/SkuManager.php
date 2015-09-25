@@ -10,10 +10,10 @@
 
 namespace Meup\Bundle\KaliClientBundle\Manager;
 
+use Meup\Bundle\KaliClientBundle\Factory\SkuFactory;
 use Meup\Bundle\KaliClientBundle\Model\SkuInterface;
 use Meup\Bundle\KaliClientBundle\Provider\KaliProvider;
 use Meup\Bundle\KaliClientBundle\Provider\KaliProviderInterface;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * Sku manager
@@ -29,13 +29,19 @@ class SkuManager implements SkuManagerInterface
     private $provider;
 
     /**
+     * @var SkuFactory
+     */
+    private $factory;
+
+    /**
      * SkuManager constructor.
      *
      * @param KaliProviderInterface $provider
      */
-    public function __construct(KaliProviderInterface $provider)
+    public function __construct(KaliProviderInterface $provider, SkuFactory $factory)
     {
         $this->provider = $provider;
+        $this->factory  = $factory;
     }
 
     /**
@@ -52,7 +58,9 @@ class SkuManager implements SkuManagerInterface
             )
         ;
 
-        return $response->json();
+        $sku = $this->factory->create()->unserialize($response->json());
+
+        return $sku;
     }
 
     /**
@@ -77,7 +85,9 @@ class SkuManager implements SkuManagerInterface
             )
         ;
 
-        return $response->json();
+        $sku = $this->factory->create()->unserialize($response->json());
+
+        return $sku;
     }
 
     /**
@@ -102,7 +112,9 @@ class SkuManager implements SkuManagerInterface
             )
         ;
 
-        return $response->json();
+        $sku = $this->factory->create()->unserialize($response->json());
+
+        return $sku;
     }
 
     /**
@@ -115,10 +127,12 @@ class SkuManager implements SkuManagerInterface
         $response = $this
             ->provider
             ->delete(
-                KaliProvider::API_ENDPOINT . '/' . $sku->getCode()
+                KaliProvider::API_ENDPOINT . '/' . $sku
             )
         ;
 
-        return $response->json();
+        $sku = $this->factory->create()->unserialize($response->json());
+
+        return $sku;
     }
 }
