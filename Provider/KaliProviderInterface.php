@@ -24,7 +24,7 @@ interface KaliProviderInterface
      *
      * @return array
      */
-    public function get($sku);
+    public function get($uri = null, $headers = null, $postBody = null, array $options = array());
 
     /**
      * Execute a POST request to create sku and return sku code
@@ -35,7 +35,29 @@ interface KaliProviderInterface
      *
      * @return array
      */
-    public function post($project, $type, $id);
+    public function post($uri = null, $headers = null, $postBody = null, array $options = array());
+
+    /**
+     * Execute a POST request to create sku and return sku code
+     *
+     * @param string $project
+     * @param string $type
+     * @param int    $id
+     *
+     * @return array
+     */
+    public function put($uri = null, $headers = null, $postBody = null, array $options = array());
+
+    /**
+     * Execute a POST request to create sku and return sku code
+     *
+     * @param string $project
+     * @param string $type
+     * @param int    $id
+     *
+     * @return array
+     */
+    public function patch($uri = null, $headers = null, $postBody = null, array $options = array());
 
     /**
      * Execute a DELETE request to
@@ -44,5 +66,5 @@ interface KaliProviderInterface
      *
      * @return bool
      */
-    public function delete($sku);
+    public function delete($uri = null, $headers = null, $postBody = null, array $options = array());
 }

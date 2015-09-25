@@ -122,7 +122,7 @@ class KaliProvider implements KaliProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function get($sku)
+    public function get2($sku)
     {
         $request = $this->client->get(
             self::API_ENDPOINT.$sku,
@@ -158,18 +158,88 @@ class KaliProvider implements KaliProviderInterface
         return $response->json();
     }
 
+
     /**
      * {@inheritdoc}
      */
-    public function post($uri = null, $headers = null, $postBody = null, array $options = array())
+    public function get($uri = null, $headers = null, $postBody = null, array $options = array())
     {
+        $defaultHeaders = $this->getAuthorizationHeader();
+
+        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
+
+        $request = $this->client->get(
+            $uri,
+            $headers,
+            $options
+        );
+
+        $response = $request->send();
+
+        return $response->json();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($uri = null, $headers = null, $body = null, array $options = array())
+    public function post($uri = null, $headers = null, $postBody = null, array $options = array())
     {
+        $defaultHeaders = $this->getAuthorizationHeader();
+
+        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
+
+        $request = $this->client->post(
+            $uri,
+            $headers,
+            $postBody,
+            $options
+        );
+
+        $response = $request->send();
+
+        return $response->json();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function put($uri = null, $headers = null, $postBody = null, array $options = array())
+    {
+        $defaultHeaders = $this->getAuthorizationHeader();
+
+        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
+
+        $request = $this->client->put(
+            $uri,
+            $headers,
+            $postBody,
+            $options
+        );
+
+        $response = $request->send();
+
+        return $response->json();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($uri = null, $headers = null, $postBody = null, array $options = array())
+    {
+        $defaultHeaders = $this->getAuthorizationHeader();
+
+        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
+
+        $request = $this->client->delete(
+            $uri,
+            $headers,
+            $postBody,
+            $options
+        );
+
+        $response = $request->send();
+
+        return $response->json();
     }
 
     /**

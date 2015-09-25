@@ -11,6 +11,7 @@
 namespace Meup\Bundle\KaliClientBundle\Manager;
 
 use Meup\Bundle\KaliClientBundle\Model\SkuInterface;
+use Meup\Bundle\KaliClientBundle\Provider\KaliProvider;
 use Meup\Bundle\KaliClientBundle\Provider\KaliProviderInterface;
 
 /**
@@ -44,7 +45,9 @@ class SkuManager implements SkuManagerInterface
     {
         return $this
             ->provider
-            ->get($sku)
+            ->get(
+                KaliProvider::API_ENDPOINT . '/' . $sku
+            )
         ;
     }
 
@@ -58,9 +61,49 @@ class SkuManager implements SkuManagerInterface
         return $this
             ->provider
             ->post(
-                $sku->getProject(),
-                $sku->getForeignType(),
-                $sku->getForeignId()
+                KaliProvider::API_ENDPOINT . '/',
+                array(),
+                array(
+                    'project' => $sku->getProject(),
+                    'type' => $sku->getForeignType(),
+                    'id' => $sku->getForeignId()
+                )
+            )
+        ;
+    }
+
+    /**
+     * @param SkuInterface $sku
+     *
+     * @return SkuInterface
+     */
+    public function update(SkuInterface $sku)
+    {
+        return $this
+            ->provider
+            ->put(
+                KaliProvider::API_ENDPOINT . '/' . $sku->getCode(),
+                array(),
+                array(
+                    'project' => $sku->getProject(),
+                    'type' => $sku->getForeignType(),
+                    'id' => $sku->getForeignId()
+                )
+            )
+        ;
+    }
+
+    /**
+     * @param SkuInterface $sku
+     *
+     * @return SkuInterface
+     */
+    public function delete(SkuInterface $sku)
+    {
+        return $this
+            ->provider
+            ->delete(
+                KaliProvider::API_ENDPOINT . '/' . $sku->getCode()
             )
         ;
     }
