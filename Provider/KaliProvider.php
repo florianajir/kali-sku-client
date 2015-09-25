@@ -122,46 +122,6 @@ class KaliProvider implements KaliProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function get2($sku)
-    {
-        $request = $this->client->get(
-            self::API_ENDPOINT.$sku,
-            $this->getAuthorizationHeader()
-        );
-
-        $response = $request->send();
-
-        if ($this->logger) {
-            $this->logger->debug(
-                'KaliClient::get',
-                array(
-                    'token' => $this->token,
-                    'url' => $request->getUrl(),
-                    'status' => $response->getStatusCode(),
-                    'response' => $response->json()
-                )
-            );
-        }
-
-        if ($response->getStatusCode() === 400) {
-            if ($this->logger) {
-                $this->logger->error(
-                    'KaliClient::get failed. Sku not found',
-                    array(
-                        'sku' => $sku,
-                    )
-                );
-            }
-            throw new InvalidArgumentException('sku not found');
-        }
-
-        return $response->json();
-    }
-
-
-    /**
-     * {@inheritdoc}
-     */
     public function get($uri = null, $headers = null, $postBody = null, array $options = array())
     {
         $defaultHeaders = $this->getAuthorizationHeader();
@@ -210,6 +170,33 @@ class KaliProvider implements KaliProviderInterface
         $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
 
         $request = $this->client->put(
+            $uri,
+            $headers,
+            $postBody,
+            $options
+        );
+
+        $response = $request->send();
+
+        return $response->json();
+    }
+
+    /**
+     * Execute a POST request to create sku and return sku code
+     *
+     * @param string $project
+     * @param string $type
+     * @param int $id
+     *
+     * @return array
+     */
+    public function patch($uri = null, $headers = null, $postBody = null, array $options = array())
+    {
+        $defaultHeaders = $this->getAuthorizationHeader();
+
+        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
+
+        $request = $this->client->patch(
             $uri,
             $headers,
             $postBody,
