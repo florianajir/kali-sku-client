@@ -64,9 +64,11 @@ class SkuManager implements SkuManagerInterface
                 KaliProvider::API_ENDPOINT . '/',
                 array(),
                 array(
-                    'project' => $sku->getProject(),
-                    'type' => $sku->getForeignType(),
-                    'id' => $sku->getForeignId()
+                    'sku' => array (
+                        'project' => $sku->getProject(),
+                        'type' => $sku->getForeignType(),
+                        'id' => $sku->getForeignId()
+                    )
                 )
             )
         ;
@@ -85,9 +87,11 @@ class SkuManager implements SkuManagerInterface
                 KaliProvider::API_ENDPOINT . '/' . $sku->getCode(),
                 array(),
                 array(
-                    'project' => $sku->getProject(),
-                    'type' => $sku->getForeignType(),
-                    'id' => $sku->getForeignId()
+                    'sku' => array (
+                        'project' => $sku->getProject(),
+                        'type' => $sku->getForeignType(),
+                        'id' => $sku->getForeignId()
+                    )
                 )
             )
         ;
