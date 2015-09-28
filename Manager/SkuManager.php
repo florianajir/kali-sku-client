@@ -57,8 +57,7 @@ class SkuManager implements SkuManagerInterface
         ;
         $data = $response->json();
 
-        if (false === empty($data))
-        {
+        if (false === empty($data)) {
             $sku = $this->factory->create();
             $sku->unserialize($data);
         } else {
@@ -92,8 +91,7 @@ class SkuManager implements SkuManagerInterface
 
         $data = $response->json();
 
-        if (false === empty($data))
-        {
+        if (false === empty($data)) {
             $sku = $this->factory->create();
             $sku->unserialize($data);
         } else {
