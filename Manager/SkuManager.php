@@ -110,7 +110,7 @@ class SkuManager implements SkuManagerInterface
     {
         $response = $this
             ->provider
-            ->put(
+            ->post(
                 KaliProvider::API_ENDPOINT . $sku->getCode(),
                 array(),
                 array(
@@ -135,15 +135,11 @@ class SkuManager implements SkuManagerInterface
      */
     public function delete($sku)
     {
-        $response = $this
+        $this
             ->provider
             ->delete(
                 KaliProvider::API_ENDPOINT . $sku
             )
         ;
-
-        $sku = $this->factory->create()->unserialize($response->json());
-
-        return $sku;
     }
 }
