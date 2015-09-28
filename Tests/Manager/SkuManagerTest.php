@@ -175,6 +175,35 @@ class SkuManagerTest extends \PHPUnit_Framework_TestCase
 
     }
 
+
+    public function testDeleteSku()
+    {
+        $response = $this->getResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('json')
+            ->willReturn(array())
+        ;
+
+        $sku = "0123456789";
+
+        $provider = $this->getKaliProviderMock();
+        $provider
+            ->expects($this->any())
+            ->method('delete')
+            ->with(
+                '/api/' . $sku
+            )
+            ->willReturn($response)
+        ;
+
+        $manager = new SkuManager($provider, $this->skuFactoryMock(null));
+        $result = $manager->delete($sku);
+
+        $this->assertNull($result);
+
+    }
+
     public function testISku()
     {
         $response = $this->getResponseMock();
