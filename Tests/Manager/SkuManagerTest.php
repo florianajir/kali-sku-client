@@ -127,6 +127,102 @@ class SkuManagerTest extends \PHPUnit_Framework_TestCase
 
     }
 
+    public function testUpdateSku()
+    {
+        $response = $this->getResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('json')
+            ->willReturn(
+                array(
+                    'code' => '0123456789',
+                    'project' => 'testProject',
+                    'type' => 'testType',
+                    'id' => 'testId'
+                )
+            )
+        ;
+
+        $sku = $this->getSkuModel();
+        $sku
+            ->setProject('testProject')
+            ->setforeignType('testType')
+            ->setForeignId('testId')
+        ;
+
+        $provider = $this->getKaliProviderMock();
+        $provider
+            ->expects($this->any())
+            ->method('post')
+            ->with(
+                '/api/',
+                array(),
+                array(
+                    'sku' => array (
+                        'project' => $sku->getProject(),
+                        'type' => $sku->getForeignType(),
+                        'id' => $sku->getForeignId()
+                    )
+                )
+            )
+            ->willReturn($response)
+        ;
+
+        $manager = new SkuManager($provider, $this->skuFactoryMock($sku));
+        $resultSku = $manager->update($sku);
+
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $resultSku);
+
+    }
+
+    public function testISku()
+    {
+        $response = $this->getResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('json')
+            ->willReturn(
+                array(
+                    'code' => '0123456789',
+                    'project' => 'testProject',
+                    'type' => 'testType',
+                    'id' => 'testId'
+                )
+            )
+        ;
+
+        $sku = $this->getSkuModel();
+        $sku
+            ->setProject('testProject')
+            ->setforeignType('testType')
+            ->setForeignId('testId')
+        ;
+
+        $provider = $this->getKaliProviderMock();
+        $provider
+            ->expects($this->any())
+            ->method('post')
+            ->with(
+                '/api/',
+                array(),
+                array(
+                    'sku' => array (
+                        'project' => $sku->getProject(),
+                        'type' => $sku->getForeignType(),
+                        'id' => $sku->getForeignId()
+                    )
+                )
+            )
+            ->willReturn($response)
+        ;
+
+        $manager = new SkuManager($provider, $this->skuFactoryMock($sku));
+        $resultSku = $manager->create($sku);
+
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $resultSku);
+
+    }
+
     private function getResponseMock()
     {
         return $this

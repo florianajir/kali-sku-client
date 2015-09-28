@@ -110,7 +110,7 @@ class SkuManager implements SkuManagerInterface
     {
         $response = $this
             ->provider
-            ->put(
+            ->post(
                 KaliProvider::API_ENDPOINT . $sku->getCode(),
                 array(),
                 array(
