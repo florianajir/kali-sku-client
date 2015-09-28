@@ -1,31 +1,32 @@
 parameters:
     http_client.class:             Guzzle\Http\Client
-    meup_kali.provider.class:      Meup\Bundle\KaliClientBundle\Provider\KaliProvider
-    meup_kali.sku.class:           Meup\Bundle\KaliClientBundle\Model\Sku
-    meup_kali.sku_factory.class:   Meup\Bundle\KaliClientBundle\Factory\SkuFactory
-    meup_kali.sku_manager.class:   Meup\Bundle\KaliClientBundle\Manager\SkuManager
+    meup_kali_client.provider.class:      Meup\Bundle\KaliClientBundle\Provider\KaliProvider
+    meup_kali_client.sku.class:           Meup\Bundle\KaliClientBundle\Model\Sku
+    meup_kali_client.sku_factory.class:   Meup\Bundle\KaliClientBundle\Factory\SkuFactory
+    meup_kali_client.sku_manager.class:   Meup\Bundle\KaliClientBundle\Manager\SkuManager
 
 services:
     http_client:
         class: %http_client.class%
 
-    meup_kali.provider:
-        class: %meup_kali.provider.class%
+    meup_kali_client.provider:
+        class: %meup_kali_client.provider.class%
         arguments:
             - @http_client
-            - @logger
             - %kali_server%
             - %kali_public_key%
             - %kali_secret_key%
             - %kali_ssl_cert%
+        calls:
+            - ['setLogger', [@logger]]
 
-    meup_kali.sku_factory:
-        class: %meup_kali.sku_factory.class%
+    meup_kali_client.sku_factory:
+        class: %meup_kali_client.sku_factory.class%
         arguments:
-            - %meup_kali.sku.class%
+            - %meup_kali_client.sku.class%
 
-    meup_kali.sku_manager:
-        class: %meup_kali.sku_manager.class%
+    meup_kali_client.sku_manager:
+        class: %meup_kali_client.sku_manager.class%
         arguments:
-            - @meup_kali.provider
-            - @meup_kali.sku_factory
+            - @meup_kali_client.provider
+            - @meup_kali_client.sku_factory

@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is part of the Meup Kali Client Bundle.
+ *
+ * (c) 1001pharmacies <http://github.com/1001pharmacies/kali-client>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Meup\Bundle\KaliClientBundle\Model;
 
@@ -89,4 +97,24 @@ interface SkuInterface
      * @return bool
      */
     public function isActive();
+
+    /**
+     * String representation of object
+     *
+     * @link http://php.net/manual/en/serializable.serialize.php
+     *
+     * @return string the json representation of the object
+     */
+    public function serialize();
+
+    /**
+     * Constructs the object
+     *
+     * @link http://php.net/manual/en/serializable.unserialize.php
+     *
+     * @param string|array $data The string representation of the object.
+     *
+     * @return self
+     */
+    public function unserialize($data);
 }

@@ -2,41 +2,42 @@
 /**
  * This file is part of the Meup Kali Client Bundle.
  *
- * (c) 1001pharmacies <http://github.com/1001pharmacies/tagcommander-bundle>
+ * (c) 1001pharmacies <http://github.com/1001pharmacies/kali-client>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Meup\Bundle\KaliClientBundle;
+
+namespace Meup\Bundle\KaliClientBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
- * This is the class that validates and merges configuration from your app/config files
+ * Class Configuration
  *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html#cookbook-bundles-extension-config-class}
+ * @author Loïc AMBROSINI <loic@1001pharmacies.com>
  */
 class Configuration implements ConfigurationInterface
 {
-    /**
-     * {@inheritDoc}
-     */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('meup_tagcommander');
+        $rootNode    = $treeBuilder->root('meup_kali_client');
 
         $rootNode
             ->children()
                 ->scalarNode('kali_server')
                     ->isRequired()
+                    ->defaultValue('')
                 ->end()
                 ->scalarNode('kali_public_key')
                     ->isRequired()
+                    ->defaultValue('')
                 ->end()
                 ->scalarNode('kali_secret_key')
                     ->isRequired()
+                    ->defaultValue('')
                 ->end()
                 ->scalarNode('kali_ssl_cert')
                     ->defaultValue('false')

@@ -1,4 +1,13 @@
 <?php
+/**
+ * This file is part of the Meup Kali Client Bundle.
+ *
+ * (c) 1001pharmacies <http://github.com/1001pharmacies/kali-client>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Meup\Bundle\KaliClientBundle\Provider;
 
 use InvalidArgumentException;
@@ -9,6 +18,7 @@ use Psr\Log\LoggerInterface;
  * Kali manager for Kali API v1.0
  *
  * @author Florian Ajir <florian@1001pharmacies.com>
+ * @author Loïc Ambrosini <loic@1001pharmacies.com>
  */
 class KaliProvider implements KaliProviderInterface
 {
@@ -55,14 +65,12 @@ class KaliProvider implements KaliProviderInterface
      */
     public function __construct(
         ClientInterface $client,
-        LoggerInterface $logger,
         $server,
         $publicKey,
         $secretKey,
         $certificateAuthority = false
     ) {
         $this->client = $client;
-        $this->logger = $logger;
         $this->publicKey = $publicKey;
         $this->secretKey = $secretKey;
         $this->server = $server;
@@ -89,7 +97,9 @@ class KaliProvider implements KaliProviderInterface
         );
         $data = $request->send()->json();
         if (empty($data['access_token'])) {
-            $this->logger->error('KaliClient::authenticate');
+            if ($this->logger) {
+                $this->logger->error('KaliClient::authenticate');
+            }
             throw new InvalidArgumentException('Failed to authenticate');
         } else {
             $this->token = $data['access_token'];
@@ -99,7 +109,7 @@ class KaliProvider implements KaliProviderInterface
     /**
      * @return array
      */
-    private function getAuthorizationHeader()
+    public function getAuthorizationHeader()
     {
         if (empty($this->token)) {
             $this->authenticate();
@@ -113,36 +123,19 @@ class KaliProvider implements KaliProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function get($sku)
+    public function get($uri = null, $headers = null, $postBody = null, array $options = array())
     {
+        $defaultHeaders = $this->getAuthorizationHeader();
+
+        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
+
         $request = $this->client->get(
-            self::API_ENDPOINT.$sku,
-            $this->getAuthorizationHeader()
+            $uri,
+            $headers,
+            $options
         );
 
-        $response = $request->send();
-
-        $this->logger->debug(
-            'KaliClient::get',
-            array(
-                'token'    => $this->token,
-                'url'      => $request->getUrl(),
-                'status'   => $response->getStatusCode(),
-                'response' => $response->json()
-            )
-        );
-
-        if ($response->getStatusCode() === 400) {
-            $this->logger->error(
-                'KaliClient::get failed. Sku not found',
-                array(
-                    'sku' => $sku,
-                )
-            );
-            throw new InvalidArgumentException('sku not found');
-        }
-
-        return $response->json();
+        return $request->send();
     }
 
     /**
@@ -150,12 +143,88 @@ class KaliProvider implements KaliProviderInterface
      */
     public function post($uri = null, $headers = null, $postBody = null, array $options = array())
     {
+        $defaultHeaders = $this->getAuthorizationHeader();
+
+        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
+
+        $request = $this->client->post(
+            $uri,
+            $headers,
+            $postBody,
+            $options
+        );
+
+        return $request->send();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($uri = null, $headers = null, $body = null, array $options = array())
+    public function put($uri = null, $headers = null, $postBody = null, array $options = array())
     {
+        $defaultHeaders = $this->getAuthorizationHeader();
+
+        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
+
+        $request = $this->client->put(
+            $uri,
+            $headers,
+            $postBody,
+            $options
+        );
+
+        return $request->send();
+    }
+
+    /**
+     * Execute a POST request to create sku and return sku code
+     *
+     * @param string $project
+     * @param string $type
+     * @param int $id
+     *
+     * @return array
+     */
+    public function patch($uri = null, $headers = null, $postBody = null, array $options = array())
+    {
+        $defaultHeaders = $this->getAuthorizationHeader();
+
+        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
+
+        $request = $this->client->patch(
+            $uri,
+            $headers,
+            $postBody,
+            $options
+        );
+
+        return $request->send();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function delete($uri = null, $headers = null, $postBody = null, array $options = array())
+    {
+        $defaultHeaders = $this->getAuthorizationHeader();
+
+        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
+
+        $request = $this->client->delete(
+            $uri,
+            $headers,
+            $postBody,
+            $options
+        );
+
+        return $request->send();
+    }
+
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 }
