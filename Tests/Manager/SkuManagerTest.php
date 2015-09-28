@@ -10,8 +10,10 @@
 
 namespace Meup\Bundle\KaliClientBundle\Tests\Manager;
 
+use Meup\Bundle\KaliClientBundle\Factory\SkuFactory;
 use Meup\Bundle\KaliClientBundle\Manager\SkuManager;
 use Meup\Bundle\KaliClientBundle\Model\Sku;
+use Meup\Bundle\KaliClientBundle\Model\SkuInterface;
 use Meup\Bundle\KaliClientBundle\Provider\KaliProvider;
 
 /**
@@ -23,31 +25,55 @@ class SkuManagerTest extends \PHPUnit_Framework_TestCase
 {
     public function testGetSku()
     {
+        $expectedSku = $this->getSkuModel();
+        $expectedSku->setCode('0123456789');
+
+        $response = $this->getResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('json')
+            ->willReturn(
+                array(
+                    'code' => '0123456789'
+                )
+            )
+        ;
+
         $provider = $this->getKaliProviderMock();
         $provider
             ->expects($this->any())
             ->method('get')
-            ->with('0123456789')
-            ->willReturn($this->getSkuModel())
+            ->with('/api/0123456789')
+            ->willReturn($response)
         ;
 
-        $manager = new SkuManager($provider);
+        $manager = new SkuManager($provider, $this->skuFactoryMock($expectedSku));
         $sku = $manager->get('0123456789');
 
-        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $sku);
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\SkuInterface', $sku);
     }
 
     public function testGetNotFoundSku()
     {
+        $expectedSku = $this->getSkuModel();
+        $expectedSku->setCode('0123456789');
+
+        $response = $this->getResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('json')
+            ->willReturn(array())
+        ;
+
         $provider = $this->getKaliProviderMock();
         $provider
             ->expects($this->any())
             ->method('get')
-            ->with('0123456789')
-            ->willReturn(null)
+            ->with('/api/0123456789')
+            ->willReturn($response)
         ;
 
-        $manager = new SkuManager($provider);
+        $manager = new SkuManager($provider, $this->skuFactoryMock(null));
         $sku = $manager->get('0123456789');
 
         $this->assertNull($sku);
@@ -55,6 +81,20 @@ class SkuManagerTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateSku()
     {
+        $response = $this->getResponseMock();
+        $response
+            ->expects($this->any())
+            ->method('json')
+            ->willReturn(
+                array(
+                    'code' => '0123456789',
+                    'project' => 'testProject',
+                    'type' => 'testType',
+                    'id' => 'testId'
+                )
+            )
+        ;
+
         $sku = $this->getSkuModel();
         $sku
             ->setProject('testProject')
@@ -67,18 +107,55 @@ class SkuManagerTest extends \PHPUnit_Framework_TestCase
             ->expects($this->any())
             ->method('post')
             ->with(
-                $sku->getProject(),
-                $sku->getForeignType(),
-                $sku->getForeignId()
+                '/api/',
+                array(),
+                array(
+                    'sku' => array (
+                        'project' => $sku->getProject(),
+                        'type' => $sku->getForeignType(),
+                        'id' => $sku->getForeignId()
+                    )
+                )
             )
-            ->willReturn($sku)
+            ->willReturn($response)
         ;
 
-        $manager = new SkuManager($provider);
+        $manager = new SkuManager($provider, $this->skuFactoryMock($sku));
         $resultSku = $manager->create($sku);
 
         $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $resultSku);
 
+    }
+
+    private function getResponseMock()
+    {
+        return $this
+            ->getMockBuilder('Guzzle\Http\Message\Response')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+    }
+
+    /**
+     * @param SkuInterface $sku
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|SkuFactory
+     */
+    private function skuFactoryMock($sku)
+    {
+        $factory = $this
+            ->getMockBuilder('Meup\Bundle\KaliClientBundle\Factory\SkuFactory')
+            ->disableOriginalConstructor()
+            ->getMock()
+        ;
+
+        $factory
+            ->expects($this->any())
+            ->method('create')
+            ->willReturn($sku)
+        ;
+
+        return $factory;
     }
 
     /**

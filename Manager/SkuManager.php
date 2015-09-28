@@ -53,12 +53,17 @@ class SkuManager implements SkuManagerInterface
     {
         $response = $this
             ->provider
-            ->get(
-                KaliProvider::API_ENDPOINT . '/' . $sku
-            )
+            ->get(KaliProvider::API_ENDPOINT . $sku)
         ;
+        $data = $response->json();
 
-        $sku = $this->factory->create()->unserialize($response->json());
+        if (false === empty($data))
+        {
+            $sku = $this->factory->create();
+            $sku->unserialize($data);
+        } else {
+            $sku = null;
+        }
 
         return $sku;
     }
@@ -73,7 +78,7 @@ class SkuManager implements SkuManagerInterface
         $response = $this
             ->provider
             ->post(
-                KaliProvider::API_ENDPOINT . '/',
+                KaliProvider::API_ENDPOINT,
                 array(),
                 array(
                     'sku' => array (
@@ -85,7 +90,15 @@ class SkuManager implements SkuManagerInterface
             )
         ;
 
-        $sku = $this->factory->create()->unserialize($response->json());
+        $data = $response->json();
+
+        if (false === empty($data))
+        {
+            $sku = $this->factory->create();
+            $sku->unserialize($data);
+        } else {
+            $sku = null;
+        }
 
         return $sku;
     }
@@ -100,7 +113,7 @@ class SkuManager implements SkuManagerInterface
         $response = $this
             ->provider
             ->put(
-                KaliProvider::API_ENDPOINT . '/' . $sku->getCode(),
+                KaliProvider::API_ENDPOINT . $sku->getCode(),
                 array(),
                 array(
                     'sku' => array (
@@ -127,7 +140,7 @@ class SkuManager implements SkuManagerInterface
         $response = $this
             ->provider
             ->delete(
-                KaliProvider::API_ENDPOINT . '/' . $sku
+                KaliProvider::API_ENDPOINT . $sku
             )
         ;
 
