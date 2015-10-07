@@ -5,7 +5,7 @@
          backupGlobals="false"
          colors="true"
          bootstrap="vendor/autoload.php"
-        >
+>
     <testsuites>
         <testsuite name="">
             <directory>./Tests</directory>
@@ -18,14 +18,8 @@
             <exclude>
                 <directory>./vendor</directory>
                 <directory>./Resources</directory>
-                <directory>./DependencyInjection</directory>
                 <directory>./Tests</directory>
             </exclude>
         </whitelist>
     </filter>
-
-    <logging>
-        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
-    </logging>
-
 </phpunit>

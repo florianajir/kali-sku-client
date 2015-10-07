@@ -63,7 +63,7 @@ interface SkuInterface
      *
      * @return self
      */
-    public function setforeignType($foreignType);
+    public function setForeignType($foreignType);
 
     /**
      * Get foreignId

@@ -94,7 +94,7 @@ class Sku implements SkuInterface
     /**
      * {@inheritDoc}
      */
-    public function setforeignType($foreignType)
+    public function setForeignType($foreignType)
     {
         $this->foreignType = $foreignType;
 

@@ -15,13 +15,6 @@
 $manager = $this->getContainer()->get('meup_kali_client.sku_manager');
 ```
 
-##Sku
-
-```php
-//Load Sku manager service
-$manager = $this->getContainer()->get('meup_baldr.Sku.manager');
-```
-
 ###Create a Sku
 
 ```php

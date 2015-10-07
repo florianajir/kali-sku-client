@@ -31,7 +31,7 @@ class SkuTest extends \PHPUnit_Framework_TestCase
         $Sku
             ->setCode('0123456789')
             ->setForeignId('0123456789')
-            ->setforeignType('type')
+            ->setForeignType('type')
             ->setPermalink('http://')
             ->setProject('project')
         ;
