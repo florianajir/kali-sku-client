@@ -326,13 +326,13 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testDesactivateSku()
+    public function testDisableSku()
     {
         $code = '1234567';
         $provider = $this->getKaliProviderMock();
         $provider
             ->expects($this->once())
-            ->method('desactivate')
+            ->method('disable')
             ->willReturn(
                 array(
                     'code' => $code,
@@ -345,7 +345,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
             ->method('create')
             ->willReturn(new Sku());
         $manager = new SkuManager($provider, $factory, 'app_name');
-        $result = $manager->desactivate($code);
+        $result = $manager->disable($code);
         $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $result);
         $this->assertFalse($result->isActive());
         $this->assertEquals($code, $result->getCode());
@@ -354,16 +354,16 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
     /**
      *
      */
-    public function testNotDesactivatedSku()
+    public function testNotDisabledSku()
     {
         $provider = $this->getKaliProviderMock();
         $provider
             ->expects($this->once())
-            ->method('desactivate')
+            ->method('disable')
             ->willReturn(null);
         $factory = $this->getSkuFactoryMock();
         $manager = new SkuManager($provider, $factory, 'app_name');
-        $result = $manager->desactivate('1234567');
+        $result = $manager->disable('1234567');
         $this->assertNull($result);
     }
 

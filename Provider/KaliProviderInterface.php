@@ -60,13 +60,13 @@ interface KaliProviderInterface
     public function delete($sku);
 
     /**
-     * Desactivates a sku
+     * Disables a sku
      *
      * @param string $sku
      *
      * @return string|false
      */
-    public function desactivate($sku);
+    public function disable($sku);
 
     /**
      * Get sku details from server

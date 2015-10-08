@@ -739,9 +739,9 @@ class KaliProviderTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Desactivate with empty sku parameter
+     * Disable with empty sku parameter
      */
-    public function testDesactivateWithoutSku()
+    public function testDisableWithoutSku()
     {
         $this->setExpectedException('InvalidArgumentException');
         $logger = $this->getLoggerMock();
@@ -758,13 +758,13 @@ class KaliProviderTest extends PHPUnit_Framework_TestCase
             $this->certificate
         );
         $provider->setLogger($logger);
-        $provider->desactivate(null);
+        $provider->disable(null);
     }
 
     /**
      *
      */
-    public function testDesactivateOk()
+    public function testDisableOk()
     {
         $logger = $this->getLoggerMock();
         $logger
@@ -802,14 +802,14 @@ class KaliProviderTest extends PHPUnit_Framework_TestCase
             $this->certificate
         );
         $provider->setLogger($logger);
-        $result = $provider->desactivate('sku');
+        $result = $provider->disable('sku');
         $this->assertNotNull($result);
     }
 
     /**
      *
      */
-    public function testDesactivateNotFound()
+    public function testDisableNotFound()
     {
         $logger = $this->getLoggerMock();
         $logger
@@ -847,14 +847,14 @@ class KaliProviderTest extends PHPUnit_Framework_TestCase
             $this->certificate
         );
         $provider->setLogger($logger);
-        $result = $provider->desactivate('sku');
+        $result = $provider->disable('sku');
         $this->assertFalse($result);
     }
 
     /**
      *
      */
-    public function testDesactivateUnexpectedResponseStatusCode()
+    public function testDisableUnexpectedResponseStatusCode()
     {
         $this->setExpectedException('Exception');
         $logger = $this->getLoggerMock();
@@ -889,7 +889,7 @@ class KaliProviderTest extends PHPUnit_Framework_TestCase
             $this->certificate
         );
         $provider->setLogger($logger);
-        $provider->desactivate('sku');
+        $provider->disable('sku');
     }
 
     /**

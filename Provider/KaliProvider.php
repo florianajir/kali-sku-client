@@ -323,7 +323,7 @@ class KaliProvider implements KaliProviderInterface
     }
 
     /**
-     * Desactivates a sku
+     * Disables a sku
      *
      * @param string $sku
      *
@@ -331,7 +331,7 @@ class KaliProvider implements KaliProviderInterface
      * @throws InvalidArgumentException no sku exception
      * @throws Exception invalid server response exception
      */
-    public function desactivate($sku)
+    public function disable($sku)
     {
         if (empty($sku) || !is_string($sku)) {
             if ($this->logger) {
@@ -341,7 +341,7 @@ class KaliProvider implements KaliProviderInterface
         }
         $request = $this->client->put(
             sprintf(
-                '%s/desactivate/%s',
+                '%s/disable/%s',
                 self::API_ENDPOINT,
                 $sku
             )
@@ -349,7 +349,7 @@ class KaliProvider implements KaliProviderInterface
         $this->setAuthorizationHeader($request);
         $response = $request->send();
         if ($this->logger) {
-            $this->logger->info("KaliProvider::desactivate($sku)");
+            $this->logger->info("KaliProvider::disable($sku)");
         }
         switch ($response->getStatusCode()) {
             case Codes::HTTP_OK:

@@ -108,12 +108,12 @@ interface SkuInterface
     /**
      * @return self
      */
-    public function activate();
+    public function enable();
 
     /**
      * @return self
      */
-    public function desactivate();
+    public function disable();
 
     /**
      * String representation of object

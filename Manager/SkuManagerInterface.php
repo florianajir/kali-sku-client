@@ -60,5 +60,5 @@ interface SkuManagerInterface
      *
      * @return SkuInterface
      */
-    public function desactivate($sku);
+    public function disable($sku);
 }

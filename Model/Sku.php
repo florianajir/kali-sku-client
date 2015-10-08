@@ -158,7 +158,7 @@ class Sku implements SkuInterface
     /**
      * {@inheritDoc}
      */
-    public function activate()
+    public function enable()
     {
         $this->active = true;
 
@@ -168,7 +168,7 @@ class Sku implements SkuInterface
     /**
      * {@inheritDoc}
      */
-    public function desactivate()
+    public function disable()
     {
         $this->active = false;
 

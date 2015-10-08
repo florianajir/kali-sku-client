@@ -56,7 +56,7 @@ class SkuTest extends \PHPUnit_Framework_TestCase
             ->setForeignType('type')
             ->setPermalink('http://')
             ->setProject('project')
-            ->activate()
+            ->enable()
         ;
         $serialized = $sku->serialize();
         $serializedArray = json_decode($serialized, true);
@@ -75,9 +75,9 @@ class SkuTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($sku->isActive());
         $sku->setActive(false);
         $this->assertFalse($sku->isActive());
-        $sku->activate();
+        $sku->enable();
         $this->assertTrue($sku->isActive());
-        $sku->desactivate();
+        $sku->disable();
         $this->assertFalse($sku->isActive());
     }
 

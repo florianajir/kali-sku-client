@@ -174,9 +174,9 @@ class SkuManager implements SkuManagerInterface
      *
      * @return SkuInterface
      */
-    public function desactivate($sku)
+    public function disable($sku)
     {
-        $data = $this->provider->desactivate($sku);
+        $data = $this->provider->disable($sku);
 
         if (!empty($data)) {
             $sku = $this
