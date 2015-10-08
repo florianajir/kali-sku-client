@@ -146,6 +146,36 @@ class Sku implements SkuInterface
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function setActive($active)
+    {
+        $this->active = (bool) $active;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function activate()
+    {
+        $this->active = true;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function desactivate()
+    {
+        $this->active = false;
+
+        return $this;
+    }
+
+    /**
      * String representation of object
      *
      * @link http://php.net/manual/en/serializable.serialize.php

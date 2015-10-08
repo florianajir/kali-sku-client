@@ -119,7 +119,10 @@ class SkuManager implements SkuManagerInterface
             );
 
         if (!empty($data)) {
-            $sku = $this->factory->create()->unserialize($data);
+            $sku = $this
+                ->factory
+                ->create()
+                ->unserialize($data);
         } else {
             $sku = null;
         }
@@ -159,10 +162,31 @@ class SkuManager implements SkuManagerInterface
     /**
      * @param string $sku
      *
-     * @return SkuInterface
+     * @return bool
      */
     public function delete($sku)
     {
-        $this->provider->delete($sku);
+        return $this->provider->delete($sku);
+    }
+
+    /**
+     * @param string $sku
+     *
+     * @return SkuInterface
+     */
+    public function desactivate($sku)
+    {
+        $data = $this->provider->desactivate($sku);
+
+        if (!empty($data)) {
+            $sku = $this
+                ->factory
+                ->create()
+                ->unserialize($data);
+        } else {
+            $sku = null;
+        }
+
+        return $sku;
     }
 }

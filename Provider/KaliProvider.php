@@ -11,8 +11,8 @@
 namespace Meup\Bundle\KaliClientBundle\Provider;
 
 use Exception;
-use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Message\RequestInterface;
 use InvalidArgumentException;
 use Meup\Bundle\KaliClientBundle\Util\Codes;
 use Psr\Log\LoggerInterface;
@@ -32,7 +32,7 @@ class KaliProvider implements KaliProviderInterface
     protected $client;
 
     /**
-     * @var KaliAuthenticator
+     * @var KaliAuthenticatorInterface
      */
     protected $authenticator;
 
@@ -53,13 +53,13 @@ class KaliProvider implements KaliProviderInterface
 
     /**
      * @param ClientInterface $client Guzzle http client
-     * @param KaliAuthenticator $authenticator kali authenticator service
+     * @param KaliAuthenticatorInterface $authenticator kali authenticator service
      * @param string $server kali host
      * @param string|bool $certificateAuthority bool, file path, or directory path
      */
     public function __construct(
         ClientInterface $client,
-        KaliAuthenticator $authenticator,
+        KaliAuthenticatorInterface $authenticator,
         $server,
         $certificateAuthority = false
     ) {
@@ -71,17 +71,70 @@ class KaliProvider implements KaliProviderInterface
     }
 
     /**
-     * Setter the logger
+     * Set the logger
      *
      * @param LoggerInterface $logger
      *
      * @return self
      */
-    public function setLogger($logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
 
         return $this;
+    }
+
+    /**
+     * Get sku details from server
+     *
+     * @param string $sku
+     *
+     * @return string|false|null
+     * @throws Exception
+     */
+    public function get($sku)
+    {
+        $request = $this->client->get(
+            sprintf(
+                '%s/%s',
+                self::API_ENDPOINT,
+                $sku
+            )
+        );
+        $this->setAuthorizationHeader($request);
+        $response = $request->send();
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::get($sku)");
+        }
+        switch ($response->getStatusCode()) {
+            case Codes::HTTP_OK:
+                break;
+            case Codes::HTTP_GONE:
+                if ($this->logger) {
+                    $this->logger->notice('Sku is gone.');
+                }
+                return false;
+            case Codes::HTTP_NOT_FOUND:
+                if ($this->logger) {
+                    $this->logger->warning('Sku not found.');
+                }
+                return null;
+            default:
+                if ($this->logger) {
+                    $this->logger->error(
+                        'Response status code not expected.',
+                        array(
+                            'method' => 'get',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getMessage(),
+                            'sku' => $sku
+                        )
+                    );
+                }
+                throw new Exception('Kali response status code not expected.');
+        }
+
+        return $response->json();
     }
 
     /**
@@ -99,61 +152,20 @@ class KaliProvider implements KaliProviderInterface
     }
 
     /**
-     * Get sku details from server
-     *
-     * @param string $sku
-     *
-     * @return string|false|null
-     */
-    public function get($sku)
-    {
-        $request = $this->client->get(
-            sprintf(
-                '%s/%s',
-                self::API_ENDPOINT,
-                $sku
-            )
-        );
-        $this->setAuthorizationHeader($request);
-        $response = $request->send();
-        $this->logger->info("KaliProvider::get($sku)");
-        switch ($response->getStatusCode()) {
-            case Codes::HTTP_OK:
-                break;
-            case Codes::HTTP_GONE:
-                $this->logger->notice('Sku is gone.');
-                return false;
-            case Codes::HTTP_NOT_FOUND:
-                $this->logger->warning('Sku not found.');
-                return null;
-            default:
-                $this->logger->error(
-                    'Response status code not expected.',
-                    array(
-                        'method' => 'get',
-                        'status' => $response->getStatusCode(),
-                        'message' => $response->getMessage(),
-                        'sku' => $sku
-                    )
-                );
-                return null;
-        }
-
-        return $response->json();
-    }
-
-    /**
      * Generate and allocate a new sku code in registry.
      * Note: used as first step of two-step sku creation process
      *
      * @param string $project
      *
      * @return string
+     * @throws Exception
      */
     public function allocate($project)
     {
         if (empty($project) || !is_string($project)) {
-            $this->logger->critical('Invalid project parameter');
+            if ($this->logger) {
+                $this->logger->critical('Invalid project parameter');
+            }
             throw new InvalidArgumentException('project parameter must be set');
         }
         $request = $this->client->post(
@@ -165,17 +177,21 @@ class KaliProvider implements KaliProviderInterface
         );
         $this->setAuthorizationHeader($request);
         $response = $request->send();
-        $this->logger->info("KaliProvider::allocate($project)");
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::allocate($project)");
+        }
         if ($response->getStatusCode() !== Codes::HTTP_CREATED) {
-            $this->logger->error(
-                'Error during sku allocation.',
-                array(
-                    'method' => 'post',
-                    'status' => $response->getStatusCode(),
-                    'message' => $response->getMessage(),
-                )
-            );
-            return null;
+            if ($this->logger) {
+                $this->logger->error(
+                    'Error during sku allocation.',
+                    array(
+                        'method' => 'post',
+                        'status' => $response->getStatusCode(),
+                        'message' => $response->getMessage(),
+                    )
+                );
+            }
+            throw new Exception('Kali response status code not expected.');
         }
 
         return $response->json();
@@ -191,11 +207,14 @@ class KaliProvider implements KaliProviderInterface
      * @param string $permalink
      *
      * @return string
+     * @throws Exception
      */
     public function create($project, $type, $id, $permalink)
     {
         if (empty($project) || !is_string($project)) {
-            $this->logger->critical('project parameter must be set.');
+            if ($this->logger) {
+                $this->logger->critical('project parameter must be set.');
+            }
             throw new InvalidArgumentException('project parameter must be set');
         }
         $data = array(
@@ -213,28 +232,36 @@ class KaliProvider implements KaliProviderInterface
         );
         $this->setAuthorizationHeader($request);
         $response = $request->send();
-        $this->logger->info("KaliProvider::create($project, $type, $id, $permalink)");
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::create($project, $type, $id, $permalink)");
+        }
         switch ($response->getStatusCode()) {
             case Codes::HTTP_CREATED:
                 break;
             case Codes::HTTP_OK:
-                $this->logger->notice('Existing sku in registry.');
+                if ($this->logger) {
+                    $this->logger->warning('Existing sku in registry.');
+                }
                 break;
             case Codes::HTTP_BAD_REQUEST:
-                $this->logger->warning('Sku creation failed due to form error.', $data);
-                return null;
+                if ($this->logger) {
+                    $this->logger->error('Sku creation failed due to form error.', $data);
+                }
+                throw new InvalidArgumentException('Sku creation failed due to form error.');
             default:
-                $this->logger->error(
-                    'Response status code not expected.',
-                    array(
-                        'method' => 'post',
-                        'status' => $response->getStatusCode(),
-                        'message' => $response->getMessage(),
-                        'data' => $data,
-                        'response' => $response->json()
-                    )
-                );
-                return null;
+                if ($this->logger) {
+                    $this->logger->error(
+                        'Response status code not expected.',
+                        array(
+                            'method' => 'post',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getMessage(),
+                            'data' => $data,
+                            'response' => $response->json()
+                        )
+                    );
+                }
+                throw new Exception('Kali response status code not expected.');
         }
 
         return $response->json();
@@ -246,11 +273,14 @@ class KaliProvider implements KaliProviderInterface
      * @param string $sku
      *
      * @return bool
+     * @throws Exception
      */
     public function delete($sku)
     {
         if (empty($sku) || !is_string($sku)) {
-            $this->logger->critical('sku parameter must be set.');
+            if ($this->logger) {
+                $this->logger->critical('sku parameter must be set.');
+            }
             throw new InvalidArgumentException('sku parameter must be set');
         }
         $request = $this->client->delete(
@@ -262,28 +292,90 @@ class KaliProvider implements KaliProviderInterface
         );
         $this->setAuthorizationHeader($request);
         $response = $request->send();
-        $this->logger->info("KaliProvider::delete($sku)");
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::delete($sku)");
+        }
+        switch ($response->getStatusCode()) {
+            case Codes::HTTP_NO_CONTENT:
+                break;
+            case Codes::HTTP_NOT_FOUND:
+                if ($this->logger) {
+                    $this->logger->warning('Sku not found.');
+                }
+                return false;
+            default:
+                if ($this->logger) {
+                    $this->logger->error(
+                        'Response status code not expected.',
+                        array(
+                            'method' => 'post',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getMessage(),
+                            'sku' => $sku,
+                            'response' => $response->json()
+                        )
+                    );
+                }
+                throw new Exception('Kali response status code not expected.');
+        }
+
+        return true;
+    }
+
+    /**
+     * Desactivates a sku
+     *
+     * @param string $sku
+     *
+     * @return bool
+     * @throws InvalidArgumentException no sku exception
+     * @throws Exception invalid server response exception
+     */
+    public function desactivate($sku)
+    {
+        if (empty($sku) || !is_string($sku)) {
+            if ($this->logger) {
+                $this->logger->critical('sku parameter must be set.');
+            }
+            throw new InvalidArgumentException('sku parameter must be set');
+        }
+        $request = $this->client->put(
+            sprintf(
+                '%s/desactivate/%s',
+                self::API_ENDPOINT,
+                $sku
+            )
+        );
+        $this->setAuthorizationHeader($request);
+        $response = $request->send();
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::desactivate($sku)");
+        }
         switch ($response->getStatusCode()) {
             case Codes::HTTP_OK:
                 break;
             case Codes::HTTP_NOT_FOUND:
-                $this->logger->warning('Sku not found.');
+                if ($this->logger) {
+                    $this->logger->warning('Sku not found.');
+                }
                 return false;
             default:
-                $this->logger->error(
-                    'Response status code not expected.',
-                    array(
-                        'method' => 'post',
-                        'status' => $response->getStatusCode(),
-                        'message' => $response->getMessage(),
-                        'sku' => $sku,
-                        'response' => $response->json()
-                    )
-                );
-                return false;
+                if ($this->logger) {
+                    $this->logger->error(
+                        'Response status code not expected.',
+                        array(
+                            'method' => 'post',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getMessage(),
+                            'sku' => $sku,
+                            'response' => $response->json()
+                        )
+                    );
+                }
+                throw new Exception('Kali response status code not expected.');
         }
 
-        return true;
+        return $response->json();
     }
 
     /**
@@ -297,11 +389,14 @@ class KaliProvider implements KaliProviderInterface
      * @param string $permalink
      *
      * @return string
+     * @throws Exception
      */
     public function update($sku, $project, $type, $id, $permalink)
     {
         if (empty($sku) || !is_string($sku)) {
-            $this->logger->critical('sku parameter must be set.');
+            if ($this->logger) {
+                $this->logger->critical('sku parameter must be set.');
+            }
             throw new InvalidArgumentException('sku parameter must be set');
         }
         $data = array(
@@ -323,28 +418,36 @@ class KaliProvider implements KaliProviderInterface
         );
         $this->setAuthorizationHeader($request);
         $response = $request->send();
-        $this->logger->info("KaliProvider::update($sku, $project, $type, $id, $permalink)");
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::update($sku, $project, $type, $id, $permalink)");
+        }
         switch ($response->getStatusCode()) {
             case Codes::HTTP_OK:
                 break;
             case Codes::HTTP_NOT_FOUND:
-                $this->logger->warning('Sku not found.');
-                return null;
+                if ($this->logger) {
+                    $this->logger->warning('Sku not found.');
+                }
+                return false;
             case Codes::HTTP_BAD_REQUEST:
-                $this->logger->warning('Sku creation failed due to form error.', $data);
-                return null;
+                if ($this->logger) {
+                    $this->logger->error('Sku update failed due to form error.', $data);
+                }
+                throw new InvalidArgumentException('Sku update failed due to form error.');
             default:
-                $this->logger->error(
-                    'Response status code not expected.',
-                    array(
-                        'method' => 'update',
-                        'status' => $response->getStatusCode(),
-                        'message' => $response->getMessage(),
-                        'data' => $data,
-                        'response' => $response->json()
-                    )
-                );
-                return null;
+                if ($this->logger) {
+                    $this->logger->error(
+                        'Response status code not expected.',
+                        array(
+                            'method' => 'update',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getMessage(),
+                            'data' => $data,
+                            'response' => $response->json()
+                        )
+                    );
+                }
+                throw new Exception('Kali response status code not expected.');
         }
 
         return $response->json();

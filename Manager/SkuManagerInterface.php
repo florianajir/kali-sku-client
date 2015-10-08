@@ -44,7 +44,7 @@ interface SkuManagerInterface
     /**
      * @param string $sku
      *
-     * @return SkuInterface
+     * @return bool
      */
     public function delete($sku);
 
@@ -54,4 +54,11 @@ interface SkuManagerInterface
      * @return SkuInterface
      */
     public function allocate($project);
+
+    /**
+     * @param string $sku
+     *
+     * @return SkuInterface
+     */
+    public function desactivate($sku);
 }

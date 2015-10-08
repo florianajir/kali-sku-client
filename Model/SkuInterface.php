@@ -99,6 +99,23 @@ interface SkuInterface
     public function isActive();
 
     /**
+     * @param bool $active
+     *
+     * @return self
+     */
+    public function setActive($active);
+
+    /**
+     * @return self
+     */
+    public function activate();
+
+    /**
+     * @return self
+     */
+    public function desactivate();
+
+    /**
      * String representation of object
      *
      * @link http://php.net/manual/en/serializable.serialize.php

@@ -7,8 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Meup\Bundle\KaliClientBundle\Provider;
+
+use Psr\Log\LoggerInterface;
 
 /**
  * Interface KaliProviderInterface
@@ -17,6 +18,15 @@ namespace Meup\Bundle\KaliClientBundle\Provider;
  */
 interface KaliProviderInterface
 {
+    /**
+     * Set the logger
+     *
+     * @param LoggerInterface $logger
+     *
+     * @return self
+     */
+    public function setLogger(LoggerInterface $logger);
+
     /**
      * Generate and allocate a new sku code in registry.
      * Note: used as first step of two-step sku creation process
@@ -48,6 +58,15 @@ interface KaliProviderInterface
      * @return bool
      */
     public function delete($sku);
+
+    /**
+     * Desactivates a sku
+     *
+     * @param string $sku
+     *
+     * @return string|false
+     */
+    public function desactivate($sku);
 
     /**
      * Get sku details from server

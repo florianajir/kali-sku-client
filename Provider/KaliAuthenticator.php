@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
  *
  * @author Florian Ajir <florian@1001pharmacies.com>
  */
-class KaliAuthenticator
+class KaliAuthenticator implements KaliAuthenticatorInterface
 {
     const GRANT_TYPE = 'client_credentials';
     const OAUTH_ENDPOINT = '/oauth/v2/token';
@@ -95,6 +95,8 @@ class KaliAuthenticator
      * Strict Oauth2 'client_credentials' authentication.
      * Use the public and secret key to request a valid token to fetch the API.
      * This token expires after 1 hour by default, so you'll have to request another one.
+     *
+     * @throws Exception if failed to retrieve access token
      */
     public function authenticate()
     {
@@ -110,25 +112,20 @@ class KaliAuthenticator
                 'Content-Type' => 'application/x-www-form-urlencoded',
             )
         );
-        try {
-            $response = $request->send();
-            $data = $response->json();
+        $response = $request->send();
+        $data = $response->json();
+        if (!empty($data['access_token'])) {
+            $this->token = $data['access_token'];
 
-            if (!empty($data['access_token'])) {
-                $this->token = $data['access_token'];
-
-                return $this->token;
-            } else {
-                throw new Exception('No access token returned on authenticate');
+            return $this->token;
+        } else {
+            if ($this->logger) {
+                $this->logger->error(
+                    'KaliClient::authenticate',
+                    $data
+                );
             }
-        } catch (Exception $exception) {
-            $this->logger->error(
-                'KaliClient::authenticate',
-                array(
-                    'message' => $exception->getMessage()
-                )
-            );
-            throw $exception;
+            throw new Exception('No access token returned on authenticate');
         }
     }
 
