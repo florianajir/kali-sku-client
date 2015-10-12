@@ -5,10 +5,11 @@
  * [Dependencies](#dependencies)
  * [Sku](#sku)
     * [Allocate](#allocation-request-for-a-sku-code)
+    * [Update a sku](#update-a-sku)
     * [Get a sku](#get-a-sku)
     * [Create a sku](#create-a-sku)
-    * [Update a sku](#update-a-sku)
     * [Delete a sku](#delete-a-sku)
+    * [Disable a sku](#disable-a-sku)
  
 ##Dependencies 
 
@@ -37,7 +38,7 @@ $updatedSku = $manager->update($sku);
 ###Get a Sku
 
 ```php
-$sku = $manager->get($skuId);
+$sku = $manager->get($skuCode);
 ```
 
 ###Create a Sku
@@ -55,5 +56,11 @@ $createdSku = $manager->create($sku);
 ###Delete a Sku
 
 ```php
-$manager->delete($skuId);
+$manager->delete($skuCode);
+```
+
+###Disable a Sku
+
+```php
+$manager->disable($skuCode);
 ```
