@@ -19,7 +19,25 @@ $manager = $this->getContainer()->get('meup_kali_client.sku_manager');
 ###Allocation (request for a sku code)
 
 ```php
-$skuCode = $manager->allocate($app_name); // $app_name is not required if defined in manager constructor
+$sku = $manager->allocate($app_name); // $app_name is not required if defined in manager constructor
+```
+
+###Update a Sku
+
+The update step has to be done after allocation and object persistance (to get object id).
+
+```php
+$sku
+    ->setForeignId('object identifier')
+    ->setForeignType('object type updated')
+;
+$updatedSku = $manager->update($sku);
+```
+
+###Get a Sku
+
+```php
+$sku = $manager->get($skuId);
 ```
 
 ###Create a Sku
@@ -32,23 +50,6 @@ $sku
     ->setForeignId('object identifier')
 ;
 $createdSku = $manager->create($sku);
-```
-
-###Get a Sku
-
-```php
-$sku = $manager->get($skuId);
-```
-
-###Update a Sku
-
-```php
-$sku = $manager->get($skuId);
-$sku
-    ->setForeignId('object identifier')
-    ->setForeignType('object type updated')
-;
-$updatedSku = $manager->update($sku);
 ```
 
 ###Delete a Sku
