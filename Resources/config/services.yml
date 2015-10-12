@@ -1,6 +1,7 @@
 parameters:
-    http_client.class:             Guzzle\Http\Client
+    http_client.class:                    Guzzle\Http\Client
     meup_kali_client.provider.class:      Meup\Bundle\KaliClientBundle\Provider\KaliProvider
+    meup_kali_client.authenticator.class: Meup\Bundle\KaliClientBundle\Provider\KaliAuthenticator
     meup_kali_client.sku.class:           Meup\Bundle\KaliClientBundle\Model\Sku
     meup_kali_client.sku_factory.class:   Meup\Bundle\KaliClientBundle\Factory\SkuFactory
     meup_kali_client.sku_manager.class:   Meup\Bundle\KaliClientBundle\Manager\SkuManager
@@ -20,7 +21,7 @@ services:
             - ['setLogger', [@logger]]
 
     meup_kali_client.authenticator:
-        class: %meup_kali_client.provider.class%
+        class: %meup_kali_client.authenticator.class%
         arguments:
             - @http_client
             - %kali_server%
