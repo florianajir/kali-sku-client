@@ -16,30 +16,83 @@ use Meup\Bundle\KaliClientBundle\Model\Sku;
  * Class SkuTest
  *
  * @author Loïc AMBROSINI <loic@1001pharmacies.com>
+ * @author Florian Ajir <florian@1001pharmacies.com>
  */
 class SkuTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()
     {
-        $Sku = new Sku();
-        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $Sku);
+        $sku = new Sku();
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $sku);
     }
 
     public function testAccessors()
     {
-        $Sku = new Sku();
-        $Sku
+        $sku = new Sku();
+        $sku
             ->setCode('0123456789')
             ->setForeignId('0123456789')
-            ->setforeignType('type')
+            ->setForeignType('type')
             ->setPermalink('http://')
             ->setProject('project')
         ;
 
-        $this->assertEquals('0123456789', $Sku->getCode());
-        $this->assertEquals('0123456789', $Sku->getForeignId());
-        $this->assertEquals('type', $Sku->getForeignType());
-        $this->assertEquals('http://', $Sku->getPermalink());
-        $this->assertEquals('project', $Sku->getProject());
+        $this->assertEquals('0123456789', $sku->getCode());
+        $this->assertEquals('0123456789', $sku->getForeignId());
+        $this->assertEquals('type', $sku->getForeignType());
+        $this->assertEquals('http://', $sku->getPermalink());
+        $this->assertEquals('project', $sku->getProject());
+    }
+
+    /**
+     *
+     */
+    public function testSerialize()
+    {
+        $sku = new Sku();
+        $sku
+            ->setCode('0123456789')
+            ->setForeignId('0123456789')
+            ->setForeignType('type')
+            ->setPermalink('http://')
+            ->setProject('project')
+            ->enable()
+        ;
+        $serialized = $sku->serialize();
+        $serializedArray = json_decode($serialized, true);
+        $this->assertEquals($serializedArray['code'], $sku->getCode());
+        $this->assertEquals($serializedArray['id'], $sku->getForeignId());
+        $this->assertEquals($serializedArray['type'], $sku->getForeignType());
+        $this->assertEquals($serializedArray['permalink'], $sku->getPermalink());
+        $this->assertEquals($serializedArray['project'], $sku->getProject());
+        $this->assertTrue($sku->isActive());
+    }
+
+    public function testActivation()
+    {
+        $sku = new Sku();
+        $sku->setActive(true);
+        $this->assertTrue($sku->isActive());
+        $sku->setActive(false);
+        $this->assertFalse($sku->isActive());
+        $sku->enable();
+        $this->assertTrue($sku->isActive());
+        $sku->disable();
+        $this->assertFalse($sku->isActive());
+    }
+
+    public function testUnserializeString()
+    {
+        $data = <<<JSON
+{
+    "active": true,
+    "code": "1234567"
+}
+JSON;
+
+        $sku = new Sku();
+        $result = $sku->unserialize($data);
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $result);
+        $this->assertEquals($result, $sku);
     }
 }

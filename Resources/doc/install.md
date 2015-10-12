@@ -49,8 +49,9 @@ $bundles = array(
 
 ```yml
 meup_kali_client:
+    app_name: marketplace
     kali_server: https://kali.1001pharmacies.com
     kali_public_key: your_public_key
     kali_secret_key: your_secret_key
-    kali_ssl_cert: true|false
+    kali_ssl_cert: false|true|ssl_cert_filepath
 ```

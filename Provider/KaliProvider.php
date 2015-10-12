@@ -10,25 +10,31 @@
 
 namespace Meup\Bundle\KaliClientBundle\Provider;
 
-use InvalidArgumentException;
+use Exception;
 use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Message\RequestInterface;
+use InvalidArgumentException;
+use Meup\Bundle\KaliClientBundle\Util\Codes;
 use Psr\Log\LoggerInterface;
 
 /**
- * Kali manager for Kali API v1.0
+ * Kali manager for Kali API
  *
  * @author Florian Ajir <florian@1001pharmacies.com>
- * @author Loïc Ambrosini <loic@1001pharmacies.com>
  */
 class KaliProvider implements KaliProviderInterface
 {
-    const GRANT_TYPE = 'client_credentials';
-    const API_ENDPOINT = '/api/';
+    const API_ENDPOINT = '/api';
 
     /**
      * @var ClientInterface
      */
     protected $client;
+
+    /**
+     * @var KaliAuthenticatorInterface
+     */
+    protected $authenticator;
 
     /**
      * @var LoggerInterface
@@ -43,188 +49,407 @@ class KaliProvider implements KaliProviderInterface
     /**
      * @var string
      */
-    protected $publicKey;
-
-    /**
-     * @var string
-     */
-    protected $secretKey;
-
-    /**
-     * @var string
-     */
     protected $token;
 
     /**
-     * @param ClientInterface $client
-     * @param LoggerInterface $logger
-     * @param string          $server               kali host
-     * @param string          $publicKey            public key, provided by Kali API
-     * @param string          $secretKey            secret key, provided by Kali API
-     * @param string|bool     $certificateAuthority bool, file path, or directory path
+     * @param ClientInterface $client Guzzle http client
+     * @param KaliAuthenticatorInterface $authenticator kali authenticator service
+     * @param string $server kali host
+     * @param string|bool $certificateAuthority bool, file path, or directory path
      */
     public function __construct(
         ClientInterface $client,
+        KaliAuthenticatorInterface $authenticator,
         $server,
-        $publicKey,
-        $secretKey,
         $certificateAuthority = false
     ) {
         $this->client = $client;
-        $this->publicKey = $publicKey;
-        $this->secretKey = $secretKey;
+        $this->authenticator = $authenticator;
         $this->server = $server;
         $this->client->setBaseUrl($server);
         $this->client->setSslVerification($certificateAuthority);
     }
 
     /**
-     * Authentication
+     * Set the logger
      *
-     * Strict Oauth2 'client_credentials' authentication.
-     * Use the public and secret key to request a valid token to fetch the API.
-     * This token expires after 1 hour by default, so you'll have to request another one.
-     */
-    private function authenticate()
-    {
-        $request = $this->client->get(
-            sprintf(
-                '/oauth/v2/token?client_id=%s&client_secret=%s&grant_type=%s',
-                $this->publicKey,
-                $this->secretKey,
-                self::GRANT_TYPE
-            )
-        );
-        $data = $request->send()->json();
-        if (empty($data['access_token'])) {
-            if ($this->logger) {
-                $this->logger->error('KaliClient::authenticate');
-            }
-            throw new InvalidArgumentException('Failed to authenticate');
-        } else {
-            $this->token = $data['access_token'];
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getAuthorizationHeader()
-    {
-        if (empty($this->token)) {
-            $this->authenticate();
-        }
-
-        return array(
-            'Authorization' => "Bearer {$this->token}",
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function get($uri = null, $headers = null, $postBody = null, array $options = array())
-    {
-        $defaultHeaders = $this->getAuthorizationHeader();
-
-        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
-
-        $request = $this->client->get(
-            $uri,
-            $headers,
-            $options
-        );
-
-        return $request->send();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function post($uri = null, $headers = null, $postBody = null, array $options = array())
-    {
-        $defaultHeaders = $this->getAuthorizationHeader();
-
-        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
-
-        $request = $this->client->post(
-            $uri,
-            $headers,
-            $postBody,
-            $options
-        );
-
-        return $request->send();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function put($uri = null, $headers = null, $postBody = null, array $options = array())
-    {
-        $defaultHeaders = $this->getAuthorizationHeader();
-
-        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
-
-        $request = $this->client->put(
-            $uri,
-            $headers,
-            $postBody,
-            $options
-        );
-
-        return $request->send();
-    }
-
-    /**
-     * Execute a POST request to create sku and return sku code
-     *
-     * @param string $project
-     * @param string $type
-     * @param int $id
-     *
-     * @return array
-     */
-    public function patch($uri = null, $headers = null, $postBody = null, array $options = array())
-    {
-        $defaultHeaders = $this->getAuthorizationHeader();
-
-        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
-
-        $request = $this->client->patch(
-            $uri,
-            $headers,
-            $postBody,
-            $options
-        );
-
-        return $request->send();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function delete($uri = null, $headers = null, $postBody = null, array $options = array())
-    {
-        $defaultHeaders = $this->getAuthorizationHeader();
-
-        $headers = !is_null($headers) ? array_merge($defaultHeaders, $headers) : $defaultHeaders;
-
-        $request = $this->client->delete(
-            $uri,
-            $headers,
-            $postBody,
-            $options
-        );
-
-        return $request->send();
-    }
-
-    /**
      * @param LoggerInterface $logger
+     *
+     * @return self
      */
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+
+        return $this;
+    }
+
+    /**
+     * Get sku details from server
+     *
+     * @param string $sku
+     *
+     * @return string|false|null
+     * @throws Exception
+     */
+    public function get($sku)
+    {
+        $request = $this->client->get(
+            sprintf(
+                '%s/%s',
+                self::API_ENDPOINT,
+                $sku
+            )
+        );
+        $this->setAuthorizationHeader($request);
+        $response = $request->send();
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::get($sku)");
+        }
+        switch ($response->getStatusCode()) {
+            case Codes::HTTP_OK:
+                break;
+            case Codes::HTTP_GONE:
+                if ($this->logger) {
+                    $this->logger->notice('Sku is gone.');
+                }
+                return false;
+            case Codes::HTTP_NOT_FOUND:
+                if ($this->logger) {
+                    $this->logger->warning('Sku not found.');
+                }
+                return null;
+            default:
+                if ($this->logger) {
+                    $this->logger->error(
+                        'Response status code not expected.',
+                        array(
+                            'method' => 'get',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getMessage(),
+                            'sku' => $sku
+                        )
+                    );
+                }
+                throw new Exception('Kali response status code not expected.');
+        }
+
+        return $response->json();
+    }
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return RequestInterface
+     * @throws Exception
+     */
+    private function setAuthorizationHeader(RequestInterface &$request)
+    {
+        $token = $this->authenticator->authenticate();
+        $request->setHeader('Authorization', "Bearer $token");
+
+        return $request;
+    }
+
+    /**
+     * Generate and allocate a new sku code in registry.
+     * Note: used as first step of two-step sku creation process
+     *
+     * @param string $project
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function allocate($project)
+    {
+        if (empty($project) || !is_string($project)) {
+            if ($this->logger) {
+                $this->logger->critical('Invalid project parameter');
+            }
+            throw new InvalidArgumentException('project parameter must be set');
+        }
+        $request = $this->client->post(
+            sprintf(
+                '%s/%s',
+                self::API_ENDPOINT,
+                $project
+            )
+        );
+        $this->setAuthorizationHeader($request);
+        $response = $request->send();
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::allocate($project)");
+        }
+        if ($response->getStatusCode() !== Codes::HTTP_CREATED) {
+            if ($this->logger) {
+                $this->logger->error(
+                    'Error during sku allocation.',
+                    array(
+                        'method' => 'post',
+                        'status' => $response->getStatusCode(),
+                        'message' => $response->getMessage(),
+                    )
+                );
+            }
+            throw new Exception('Kali response status code not expected.');
+        }
+
+        return $response->json();
+    }
+
+    /**
+     * Creates a new sku from the submitted data.
+     * Note: used for one-step sku creation process
+     *
+     * @param string $project
+     * @param string $type
+     * @param string $id
+     * @param string $permalink
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function create($project, $type, $id, $permalink)
+    {
+        if (empty($project) || !is_string($project)) {
+            if ($this->logger) {
+                $this->logger->critical('project parameter must be set.');
+            }
+            throw new InvalidArgumentException('project parameter must be set');
+        }
+        $data = array(
+            'sku' => array(
+                'project' => $project,
+                'type' => $type,
+                'id' => $id,
+                'permalink' => $permalink,
+            )
+        );
+        $request = $this->client->post(
+            self::API_ENDPOINT,
+            array(),
+            $data
+        );
+        $this->setAuthorizationHeader($request);
+        $response = $request->send();
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::create($project, $type, $id, $permalink)");
+        }
+        switch ($response->getStatusCode()) {
+            case Codes::HTTP_CREATED:
+                break;
+            case Codes::HTTP_OK:
+                if ($this->logger) {
+                    $this->logger->warning('Existing sku in registry.');
+                }
+                break;
+            case Codes::HTTP_BAD_REQUEST:
+                if ($this->logger) {
+                    $this->logger->error('Sku creation failed due to form error.', $data);
+                }
+                throw new InvalidArgumentException('Sku creation failed due to form error.');
+            default:
+                if ($this->logger) {
+                    $this->logger->error(
+                        'Response status code not expected.',
+                        array(
+                            'method' => 'post',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getMessage(),
+                            'data' => $data,
+                            'response' => $response->json()
+                        )
+                    );
+                }
+                throw new Exception('Kali response status code not expected.');
+        }
+
+        return $response->json();
+    }
+
+    /**
+     * Removes a sku
+     *
+     * @param string $sku
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function delete($sku)
+    {
+        if (empty($sku) || !is_string($sku)) {
+            if ($this->logger) {
+                $this->logger->critical('sku parameter must be set.');
+            }
+            throw new InvalidArgumentException('sku parameter must be set');
+        }
+        $request = $this->client->delete(
+            sprintf(
+                '%s/%s',
+                self::API_ENDPOINT,
+                $sku
+            )
+        );
+        $this->setAuthorizationHeader($request);
+        $response = $request->send();
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::delete($sku)");
+        }
+        switch ($response->getStatusCode()) {
+            case Codes::HTTP_NO_CONTENT:
+                break;
+            case Codes::HTTP_NOT_FOUND:
+                if ($this->logger) {
+                    $this->logger->warning('Sku not found.');
+                }
+                return false;
+            default:
+                if ($this->logger) {
+                    $this->logger->error(
+                        'Response status code not expected.',
+                        array(
+                            'method' => 'post',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getMessage(),
+                            'sku' => $sku,
+                            'response' => $response->json()
+                        )
+                    );
+                }
+                throw new Exception('Kali response status code not expected.');
+        }
+
+        return true;
+    }
+
+    /**
+     * Disables a sku
+     *
+     * @param string $sku
+     *
+     * @return bool
+     * @throws InvalidArgumentException no sku exception
+     * @throws Exception invalid server response exception
+     */
+    public function disable($sku)
+    {
+        if (empty($sku) || !is_string($sku)) {
+            if ($this->logger) {
+                $this->logger->critical('sku parameter must be set.');
+            }
+            throw new InvalidArgumentException('sku parameter must be set');
+        }
+        $request = $this->client->put(
+            sprintf(
+                '%s/disable/%s',
+                self::API_ENDPOINT,
+                $sku
+            )
+        );
+        $this->setAuthorizationHeader($request);
+        $response = $request->send();
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::disable($sku)");
+        }
+        switch ($response->getStatusCode()) {
+            case Codes::HTTP_OK:
+                break;
+            case Codes::HTTP_NOT_FOUND:
+                if ($this->logger) {
+                    $this->logger->warning('Sku not found.');
+                }
+                return false;
+            default:
+                if ($this->logger) {
+                    $this->logger->error(
+                        'Response status code not expected.',
+                        array(
+                            'method' => 'post',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getMessage(),
+                            'sku' => $sku,
+                            'response' => $response->json()
+                        )
+                    );
+                }
+                throw new Exception('Kali response status code not expected.');
+        }
+
+        return $response->json();
+    }
+
+    /**
+     * Edit sku details on server
+     * Note: used as second step of two-step sku creation process
+     *
+     * @param string $sku
+     * @param string $project
+     * @param string $type
+     * @param string $id
+     * @param string $permalink
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function update($sku, $project, $type, $id, $permalink)
+    {
+        if (empty($sku) || !is_string($sku)) {
+            if ($this->logger) {
+                $this->logger->critical('sku parameter must be set.');
+            }
+            throw new InvalidArgumentException('sku parameter must be set');
+        }
+        $data = array(
+            'sku' => array(
+                'project' => $project,
+                'type' => $type,
+                'id' => $id,
+                'permalink' => $permalink,
+            )
+        );
+        $request = $this->client->put(
+            sprintf(
+                '%s/%s',
+                self::API_ENDPOINT,
+                $sku
+            ),
+            array(),
+            $data
+        );
+        $this->setAuthorizationHeader($request);
+        $response = $request->send();
+        if ($this->logger) {
+            $this->logger->info("KaliProvider::update($sku, $project, $type, $id, $permalink)");
+        }
+        switch ($response->getStatusCode()) {
+            case Codes::HTTP_OK:
+                break;
+            case Codes::HTTP_NOT_FOUND:
+                if ($this->logger) {
+                    $this->logger->warning('Sku not found.');
+                }
+                return false;
+            case Codes::HTTP_BAD_REQUEST:
+                if ($this->logger) {
+                    $this->logger->error('Sku update failed due to form error.', $data);
+                }
+                throw new InvalidArgumentException('Sku update failed due to form error.');
+            default:
+                if ($this->logger) {
+                    $this->logger->error(
+                        'Response status code not expected.',
+                        array(
+                            'method' => 'update',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getMessage(),
+                            'data' => $data,
+                            'response' => $response->json()
+                        )
+                    );
+                }
+                throw new Exception('Kali response status code not expected.');
+        }
+
+        return $response->json();
     }
 }

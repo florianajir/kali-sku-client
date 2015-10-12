@@ -10,9 +10,9 @@
 
 namespace Meup\Bundle\KaliClientBundle\Manager;
 
+use InvalidArgumentException;
 use Meup\Bundle\KaliClientBundle\Factory\SkuFactory;
 use Meup\Bundle\KaliClientBundle\Model\SkuInterface;
-use Meup\Bundle\KaliClientBundle\Provider\KaliProvider;
 use Meup\Bundle\KaliClientBundle\Provider\KaliProviderInterface;
 
 /**
@@ -23,6 +23,11 @@ use Meup\Bundle\KaliClientBundle\Provider\KaliProviderInterface;
  */
 class SkuManager implements SkuManagerInterface
 {
+    /**
+     * @var string
+     */
+    protected $appName;
+
     /**
      * @var KaliProviderInterface
      */
@@ -37,11 +42,41 @@ class SkuManager implements SkuManagerInterface
      * SkuManager constructor.
      *
      * @param KaliProviderInterface $provider
+     * @param SkuFactory $factory
+     * @param string $appName
      */
-    public function __construct(KaliProviderInterface $provider, SkuFactory $factory)
+    public function __construct(KaliProviderInterface $provider, SkuFactory $factory, $appName = null)
     {
         $this->provider = $provider;
-        $this->factory  = $factory;
+        $this->factory = $factory;
+        $this->appName = $appName;
+    }
+
+    /**
+     * @param string|null $appName
+     *
+     * @return SkuInterface|null
+     */
+    public function allocate($appName = null)
+    {
+        $project = $this->appName;
+        if (!is_null($appName)) {
+            $project = $appName;
+        }
+        if (is_null($project)) {
+            throw new InvalidArgumentException('You must define your application name');
+        }
+        $data = $this->provider->allocate($project);
+        if (!empty($data)) {
+            $sku = $this
+                ->factory
+                ->create()
+                ->unserialize($data);
+        } else {
+            $sku = null;
+        }
+
+        return $sku;
     }
 
     /**
@@ -51,15 +86,15 @@ class SkuManager implements SkuManagerInterface
      */
     public function get($sku)
     {
-        $response = $this
+        $data = $this
             ->provider
-            ->get(KaliProvider::API_ENDPOINT . $sku)
-        ;
-        $data = $response->json();
+            ->get($sku);
 
-        if (false === empty($data)) {
-            $sku = $this->factory->create();
-            $sku->unserialize($data);
+        if (!empty($data)) {
+            $sku = $this
+                ->factory
+                ->create()
+                ->unserialize($data);
         } else {
             $sku = null;
         }
@@ -74,26 +109,20 @@ class SkuManager implements SkuManagerInterface
      */
     public function create(SkuInterface $sku)
     {
-        $response = $this
+        $data = $this
             ->provider
-            ->post(
-                KaliProvider::API_ENDPOINT,
-                array(),
-                array(
-                    'sku' => array (
-                        'project' => $sku->getProject(),
-                        'type' => $sku->getForeignType(),
-                        'id' => $sku->getForeignId()
-                    )
-                )
-            )
-        ;
+            ->create(
+                $sku->getProject(),
+                $sku->getForeignType(),
+                $sku->getForeignId(),
+                $sku->getPermalink()
+            );
 
-        $data = $response->json();
-
-        if (false === empty($data)) {
-            $sku = $this->factory->create();
-            $sku->unserialize($data);
+        if (!empty($data)) {
+            $sku = $this
+                ->factory
+                ->create()
+                ->unserialize($data);
         } else {
             $sku = null;
         }
@@ -108,22 +137,24 @@ class SkuManager implements SkuManagerInterface
      */
     public function update(SkuInterface $sku)
     {
-        $response = $this
+        $data = $this
             ->provider
-            ->post(
-                KaliProvider::API_ENDPOINT . $sku->getCode(),
-                array(),
-                array(
-                    'sku' => array (
-                        'project' => $sku->getProject(),
-                        'type' => $sku->getForeignType(),
-                        'id' => $sku->getForeignId()
-                    )
-                )
-            )
-        ;
+            ->update(
+                $sku->getCode(),
+                $sku->getProject(),
+                $sku->getForeignType(),
+                $sku->getForeignId(),
+                $sku->getPermalink()
+            );
 
-        $sku = $this->factory->create()->unserialize($response->json());
+        if (!empty($data)) {
+            $sku = $this
+                ->factory
+                ->create()
+                ->unserialize($data);
+        } else {
+            $sku = null;
+        }
 
         return $sku;
     }
@@ -131,15 +162,31 @@ class SkuManager implements SkuManagerInterface
     /**
      * @param string $sku
      *
-     * @return SkuInterface
+     * @return bool
      */
     public function delete($sku)
     {
-        $this
-            ->provider
-            ->delete(
-                KaliProvider::API_ENDPOINT . $sku
-            )
-        ;
+        return $this->provider->delete($sku);
+    }
+
+    /**
+     * @param string $sku
+     *
+     * @return SkuInterface
+     */
+    public function disable($sku)
+    {
+        $data = $this->provider->disable($sku);
+
+        if (!empty($data)) {
+            $sku = $this
+                ->factory
+                ->create()
+                ->unserialize($data);
+        } else {
+            $sku = null;
+        }
+
+        return $sku;
     }
 }

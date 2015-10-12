@@ -13,6 +13,16 @@ services:
         class: %meup_kali_client.provider.class%
         arguments:
             - @http_client
+            - @meup_kali_client.authenticator
+            - %kali_server%
+            - %kali_ssl_cert%
+        calls:
+            - ['setLogger', [@logger]]
+
+    meup_kali_client.authenticator:
+        class: %meup_kali_client.provider.class%
+        arguments:
+            - @http_client
             - %kali_server%
             - %kali_public_key%
             - %kali_secret_key%
@@ -30,3 +40,4 @@ services:
         arguments:
             - @meup_kali_client.provider
             - @meup_kali_client.sku_factory
+            - %app_name%

@@ -63,7 +63,7 @@ interface SkuInterface
      *
      * @return self
      */
-    public function setforeignType($foreignType);
+    public function setForeignType($foreignType);
 
     /**
      * Get foreignId
@@ -97,6 +97,23 @@ interface SkuInterface
      * @return bool
      */
     public function isActive();
+
+    /**
+     * @param bool $active
+     *
+     * @return self
+     */
+    public function setActive($active);
+
+    /**
+     * @return self
+     */
+    public function enable();
+
+    /**
+     * @return self
+     */
+    public function disable();
 
     /**
      * String representation of object

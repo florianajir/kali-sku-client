@@ -5,3 +5,8 @@
 Sku requester bundle for your Symfony application communicating with *Kali-server*.
 
 Kali-client can create, get and delete sku data.
+
+## Installation & Usage
+
+* [Install](Resources/doc/install.md)
+* [Usage](Resources/doc/usage.md)

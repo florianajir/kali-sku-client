@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * Class ConfigurationTest
  *
  * @author Loïc AMBROSINI <loic@1001pharmacies.com>
+ * @author Florian Ajir <florian@1001pharmacies.com>
  */
 class MeupKaliClientExtensionTest extends \PHPUnit_Framework_TestCase
 {
@@ -55,11 +56,28 @@ class MeupKaliClientExtensionTest extends \PHPUnit_Framework_TestCase
         parent::setUp();
 
         $this->extension = $this->getExtension();
-        $this->root      = "meup_kali_client";
+        $this->root = "meup_kali_client";
     }
 
     public function testBundleAlias()
     {
         $this->assertEquals('meup_kali_client', $this->getExtension()->getAlias());
+    }
+
+    /**
+     *
+     */
+    public function testGetConfig()
+    {
+        $this->extension->load(
+            array(
+                $this->root => array(
+                    'kali_server' => 'http://',
+                    'kali_public_key' => '123',
+                    'kali_secret_key' => '123'
+                )
+            ),
+            $container = $this->getContainer()
+        );
     }
 }

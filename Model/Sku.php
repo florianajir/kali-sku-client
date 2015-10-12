@@ -94,7 +94,7 @@ class Sku implements SkuInterface
     /**
      * {@inheritDoc}
      */
-    public function setforeignType($foreignType)
+    public function setForeignType($foreignType)
     {
         $this->foreignType = $foreignType;
 
@@ -143,6 +143,36 @@ class Sku implements SkuInterface
     public function isActive()
     {
         return $this->active;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setActive($active)
+    {
+        $this->active = (bool) $active;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function enable()
+    {
+        $this->active = true;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function disable()
+    {
+        $this->active = false;
+
+        return $this;
     }
 
     /**

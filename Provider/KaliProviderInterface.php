@@ -7,76 +7,87 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 namespace Meup\Bundle\KaliClientBundle\Provider;
 
-use Guzzle\Http\Message\Response;
+use Psr\Log\LoggerInterface;
 
 /**
  * Interface KaliProviderInterface
  *
- * @author <florian@1001pharmacies.com>
- * @author Loïc Ambrosini <loic@1001pharmacies.com>
+ * @author Florian Ajir <florian@1001pharmacies.com>
  */
 interface KaliProviderInterface
 {
     /**
-     * Execute a GET request
+     * Set the logger
      *
-     * @param string  $uri
-     * @param array   $headers
-     * @param string  $body
-     * @param array   $options
+     * @param LoggerInterface $logger
      *
-     * @return Response
+     * @return self
      */
-    public function get($uri = null, $headers = null, $body = null, array $options = array());
+    public function setLogger(LoggerInterface $logger);
 
     /**
-     * Execute a POST request
+     * Generate and allocate a new sku code in registry.
+     * Note: used as first step of two-step sku creation process
      *
-     * @param string  $uri
-     * @param array   $headers
-     * @param string  $body
-     * @param array   $options
+     * @param string $project
      *
-     * @return Response
+     * @return string
      */
-    public function post($uri = null, $headers = null, $body = null, array $options = array());
+    public function allocate($project);
 
     /**
-     * Execute a PUT request
+     * Creates a new sku from the submitted data.
+     * Note: used for one-step sku creation process
      *
-     * @param string  $uri
-     * @param array   $headers
-     * @param string  $body
-     * @param array   $options
+     * @param string $project
+     * @param string $type
+     * @param string $id
+     * @param string $permalink
      *
-     * @return Response
+     * @return string
      */
-    public function put($uri = null, $headers = null, $body = null, array $options = array());
+    public function create($project, $type, $id, $permalink);
 
     /**
-     * Execute a PATCH request
+     * Removes a sku
      *
-     * @param string  $uri
-     * @param array   $headers
-     * @param string  $body
-     * @param array   $options
+     * @param string $sku
      *
-     * @return Response
+     * @return bool
      */
-    public function patch($uri = null, $headers = null, $body = null, array $options = array());
+    public function delete($sku);
 
     /**
-     * Execute a DELETE request to
+     * Disables a sku
      *
-     * @param string  $uri
-     * @param array   $headers
-     * @param string  $body
-     * @param array   $options
+     * @param string $sku
      *
-     * @return Response
+     * @return string|false
      */
-    public function delete($uri = null, $headers = null, $body = null, array $options = array());
+    public function disable($sku);
+
+    /**
+     * Get sku details from server
+     *
+     * @param string $sku
+     *
+     * @return string
+     */
+    public function get($sku);
+
+    /**
+     * Edit sku details on server
+     * Note: used as second step of two-step sku creation process
+     *
+     * @param string $code
+     * @param string $project
+     * @param string $type
+     * @param string $id
+     * @param string $permalink
+     *
+     * @return string
+     */
+    public function update($code, $project, $type, $id, $permalink);
 }
