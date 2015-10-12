@@ -15,6 +15,12 @@
 $manager = $this->getContainer()->get('meup_kali_client.sku_manager');
 ```
 
+###Allocation (request for a sku code)
+
+```php
+$skuCode = $manager->allocate($app_name); // $app_name is not required if defined in manager constructor
+```
+
 ###Create a Sku
 
 ```php
@@ -38,6 +44,7 @@ $sku = $manager->get($skuId);
 ```php
 $sku = $manager->get($skuId);
 $sku
+    ->setForeignId('object identifier')
     ->setForeignType('object type updated')
 ;
 $updatedSku = $manager->update($sku);
