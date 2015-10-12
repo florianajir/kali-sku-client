@@ -4,6 +4,7 @@
 
  * [Dependencies](#dependencies)
  * [Sku](#sku)
+    * [Allocate](#allocation-request-for-a-sku-code)
     * [Get a sku](#get-a-sku)
     * [Create a sku](#create-a-sku)
     * [Update a sku](#update-a-sku)
