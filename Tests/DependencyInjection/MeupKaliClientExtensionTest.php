@@ -46,11 +46,12 @@ class MeupKaliClientExtensionTest extends \PHPUnit_Framework_TestCase
      */
     private function getContainer()
     {
-        $container = new ContainerBuilder();
-
-        return $container;
+        return new ContainerBuilder();
     }
 
+    /**
+     *
+     */
     public function setUp()
     {
         parent::setUp();
@@ -59,6 +60,9 @@ class MeupKaliClientExtensionTest extends \PHPUnit_Framework_TestCase
         $this->root = "meup_kali_client";
     }
 
+    /**
+     *
+     */
     public function testBundleAlias()
     {
         $this->assertEquals('meup_kali_client', $this->getExtension()->getAlias());
@@ -77,7 +81,7 @@ class MeupKaliClientExtensionTest extends \PHPUnit_Framework_TestCase
                     'kali_secret_key' => '123'
                 )
             ),
-            $container = $this->getContainer()
+            $this->getContainer()
         );
     }
 }
