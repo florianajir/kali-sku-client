@@ -10,7 +10,6 @@
 
 namespace Meup\Bundle\KaliClientBundle\Tests\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Meup\Bundle\KaliClientBundle\DependencyInjection\MeupKaliClientExtension;
 use Meup\Bundle\KaliClientBundle\DependencyInjection\Configuration;
 
@@ -18,6 +17,7 @@ use Meup\Bundle\KaliClientBundle\DependencyInjection\Configuration;
  * Class ConfigurationTest
  *
  * @author Loïc AMBROSINI <loic@1001pharmacies.com>
+ * @author Florian AJIR <florian@1001pharmacies.com>
  */
 class ConfigurationTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,12 +25,14 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
      * @var MeupKaliClientExtension
      */
     private $extension;
+
     /**
      * Root name of the configuration
      *
      * @var string
      */
     private $root;
+
     /**
      * @return MeupKaliClientExtension
      */
@@ -38,15 +40,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
     {
         return new MeupKaliClientExtension();
     }
-    /**
-     * @return ContainerBuilder
-     */
-    private function getContainer()
-    {
-        $container = new ContainerBuilder();
 
-        return $container;
-    }
     /**
      *
      */
@@ -57,6 +51,9 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $this->root      = "meup_kali_client";
     }
 
+    /**
+     *
+     */
     public function testGetConfigurationTree()
     {
         $configuration = new Configuration();
