@@ -241,7 +241,7 @@ class KaliProvider implements KaliProviderInterface
             )
         );
         $request = $this->client->post(
-            self::API_ENDPOINT,
+            self::API_ENDPOINT . '/',
             array(),
             $data
         );
