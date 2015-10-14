@@ -165,7 +165,7 @@ class KaliProvider implements KaliProviderInterface
         if ($this->logger) {
             $this->logger->info("KaliProvider::allocate($project)");
         }
-        if (empty($project) || !is_string($project)) {
+        if (empty($project)) {
             if ($this->logger) {
                 $this->logger->critical('Invalid project parameter');
             }
@@ -214,19 +214,19 @@ class KaliProvider implements KaliProviderInterface
         if ($this->logger) {
             $this->logger->info("KaliProvider::create($project, $type, $id, $permalink)");
         }
-        if (empty($project) || !is_string($project)) {
+        if (empty($project)) {
             if ($this->logger) {
                 $this->logger->critical('project parameter must be set.');
             }
             throw new InvalidArgumentException('project parameter must be set');
         }
-        if (empty($type) || !is_string($type)) {
+        if (empty($type)) {
             if ($this->logger) {
                 $this->logger->critical('type parameter must be set.');
             }
             throw new InvalidArgumentException('type parameter must be set');
         }
-        if (empty($id) || !is_string($id)) {
+        if (empty($id)) {
             if ($this->logger) {
                 $this->logger->critical('id parameter must be set.');
             }
@@ -292,7 +292,7 @@ class KaliProvider implements KaliProviderInterface
         if ($this->logger) {
             $this->logger->info("KaliProvider::delete($sku)");
         }
-        if (empty($sku) || !is_string($sku)) {
+        if (empty($sku)) {
             if ($this->logger) {
                 $this->logger->critical('sku parameter must be set.');
             }
@@ -348,7 +348,7 @@ class KaliProvider implements KaliProviderInterface
         if ($this->logger) {
             $this->logger->info("KaliProvider::disable($sku)");
         }
-        if (empty($sku) || !is_string($sku)) {
+        if (empty($sku)) {
             if ($this->logger) {
                 $this->logger->critical('sku parameter must be set.');
             }
@@ -408,25 +408,25 @@ class KaliProvider implements KaliProviderInterface
         if ($this->logger) {
             $this->logger->info("KaliProvider::update($sku, $project, $type, $id, $permalink)");
         }
-        if (empty($sku) || !is_string($sku)) {
+        if (empty($sku)) {
             if ($this->logger) {
                 $this->logger->critical('sku parameter must be set.');
             }
             throw new InvalidArgumentException('sku parameter must be set');
         }
-        if (empty($project) || !is_string($project)) {
+        if (empty($project)) {
             if ($this->logger) {
                 $this->logger->critical('project parameter must be set.');
             }
             throw new InvalidArgumentException('project parameter must be set');
         }
-        if (empty($type) || !is_string($type)) {
+        if (empty($type)) {
             if ($this->logger) {
                 $this->logger->critical('type parameter must be set.');
             }
             throw new InvalidArgumentException('type parameter must be set');
         }
-        if (empty($id) || !is_string($id)) {
+        if (empty($id)) {
             if ($this->logger) {
                 $this->logger->critical('id parameter must be set.');
             }
