@@ -11,7 +11,7 @@
 namespace Meup\Bundle\KaliClientBundle\Provider;
 
 use Exception;
-use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Client;
 use Guzzle\Http\Message\RequestInterface;
 use InvalidArgumentException;
 use Meup\Bundle\KaliClientBundle\Util\Codes;
@@ -27,7 +27,7 @@ class KaliProvider implements KaliProviderInterface
     const API_ENDPOINT = '/api';
 
     /**
-     * @var ClientInterface
+     * @var Client
      */
     protected $client;
 
@@ -52,13 +52,13 @@ class KaliProvider implements KaliProviderInterface
     protected $token;
 
     /**
-     * @param ClientInterface $client Guzzle http client
+     * @param Client $client Guzzle http client
      * @param KaliAuthenticatorInterface $authenticator kali authenticator service
      * @param string $server kali host
      * @param string|bool $certificateAuthority bool, file path, or directory path
      */
     public function __construct(
-        ClientInterface $client,
+        Client $client,
         KaliAuthenticatorInterface $authenticator,
         $server,
         $certificateAuthority = false
@@ -66,6 +66,8 @@ class KaliProvider implements KaliProviderInterface
         $this->client = $client;
         $this->authenticator = $authenticator;
         $this->server = $server;
+        $this->client->setConfig(array());
+        $this->client->setDefaultOption('exceptions', false);
         $this->client->setBaseUrl($server);
         $this->client->setSslVerification($certificateAuthority);
     }
@@ -454,6 +456,11 @@ class KaliProvider implements KaliProviderInterface
         switch ($response->getStatusCode()) {
             case Codes::HTTP_OK:
                 break;
+            case Codes::HTTP_CONFLICT:
+                if ($this->logger) {
+                    $this->logger->warning('Sku update failed due to existing resource on server.', $response->json());
+                }
+                throw new InvalidArgumentException('Sku update failed due to existing resource on server.');
             case Codes::HTTP_NOT_FOUND:
                 if ($this->logger) {
                     $this->logger->warning('Sku not found.');

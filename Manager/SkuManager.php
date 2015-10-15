@@ -10,6 +10,7 @@
 
 namespace Meup\Bundle\KaliClientBundle\Manager;
 
+use Exception;
 use InvalidArgumentException;
 use Meup\Bundle\KaliClientBundle\Factory\SkuFactory;
 use Meup\Bundle\KaliClientBundle\Model\SkuInterface;
@@ -132,10 +133,12 @@ class SkuManager implements SkuManagerInterface
 
     /**
      * @param SkuInterface $sku
+     * @param bool|false   $returnExisting true to return existing entity if conflict occur (same project, type and id)
      *
-     * @return SkuInterface
+     * @return SkuInterface|null
+     * @throws Exception
      */
-    public function update(SkuInterface $sku)
+    public function update(SkuInterface $sku, $returnExisting = false)
     {
         $data = $this
             ->provider
@@ -148,10 +151,14 @@ class SkuManager implements SkuManagerInterface
             );
 
         if (!empty($data)) {
+            $code = $sku->getCode();
             $sku = $this
                 ->factory
                 ->create()
                 ->unserialize($data);
+            if ($sku->getCode() !== $code && !$returnExisting) {
+                throw new Exception("Resource already registred with sku code " . $sku->getCode());
+            }
         } else {
             $sku = null;
         }
