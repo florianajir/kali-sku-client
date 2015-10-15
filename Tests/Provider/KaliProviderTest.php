@@ -10,7 +10,7 @@
 
 namespace Meup\Bundle\KaliClientBundle\Tests\Manager;
 
-use Guzzle\Http\ClientInterface;
+use Guzzle\Http\Client;
 use Guzzle\Http\Message\RequestInterface;
 use Guzzle\Http\Message\Response;
 use Meup\Bundle\KaliClientBundle\Provider\KaliAuthenticatorInterface;
@@ -65,12 +65,12 @@ class KaliProviderTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \PHPUnit_Framework_MockObject_MockObject|ClientInterface
+     * @return \PHPUnit_Framework_MockObject_MockObject|Client
      */
     private function getClientMock()
     {
         return $this
-            ->getMockBuilder('Guzzle\Http\ClientInterface')
+            ->getMockBuilder('Guzzle\Http\Client')
             ->disableOriginalConstructor()
             ->getMock();
     }
