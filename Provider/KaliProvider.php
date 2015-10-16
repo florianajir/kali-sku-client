@@ -460,7 +460,7 @@ class KaliProvider implements KaliProviderInterface
                 if ($this->logger) {
                     $this->logger->warning('Sku update failed due to existing resource on server.', $response->json());
                 }
-                throw new InvalidArgumentException('Sku update failed due to existing resource on server.');
+                break;
             case Codes::HTTP_NOT_FOUND:
                 if ($this->logger) {
                     $this->logger->warning('Sku not found.');
