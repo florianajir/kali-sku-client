@@ -61,3 +61,6 @@ kali_public_key: your_public_key
 kali_secret_key: your_secret_key
 kali_ssl_cert: false|true|ssl_cert_filepath
 ```
+
+### kali_ssl_cert
+Set to true to enable SSL certificate validation, false to disable SSL certificate validation, or supply the path to a CA bundle to enable verification using a custom certificate.
