@@ -41,17 +41,23 @@ $bundles = array(
 );
 ```
 
+Load kali-client services in your `app/config.yml` :
+        
+```php
+imports:
+    - { resource: "@MeupKaliClientBundle/Resources/config/services.yml" }
+```
+
 ---
 
-## Config
+## Parameters
 
-`config.yml` :
+`parameters.yml` :
 
 ```yml
-meup_kali_client:
-    app_name: marketplace
-    kali_server: https://kali.1001pharmacies.com
-    kali_public_key: your_public_key
-    kali_secret_key: your_secret_key
-    kali_ssl_cert: false|true|ssl_cert_filepath
+app_name: marketplace
+kali_server: https://kali.1001pharmacies.com
+kali_public_key: your_public_key
+kali_secret_key: your_secret_key
+kali_ssl_cert: false|true|ssl_cert_filepath
 ```
