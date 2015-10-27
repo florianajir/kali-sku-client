@@ -2,7 +2,7 @@
 /**
  * This file is part of the Kali-client Project
  *
- * (c) 1001pharmacies <http://github.com/1001pharmacies/Kali-client>
+ * (c) 1001pharmacies <http://github.com/1001pharmacies/kali-client>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -10,7 +10,7 @@
 namespace Meup\Bundle\KaliClientBundle\Provider;
 
 use Exception;
-use Guzzle\Http\ClientInterface;
+use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -21,10 +21,10 @@ use Psr\Log\LoggerInterface;
 class KaliAuthenticator implements KaliAuthenticatorInterface
 {
     const GRANT_TYPE = 'client_credentials';
-    const OAUTH_ENDPOINT = '/oauth/v2/token';
+    const OAUTH_ENDPOINT = 'oauth/v2/token';
 
     /**
-     * @var ClientInterface
+     * @var Client
      */
     protected $client;
 
@@ -32,11 +32,6 @@ class KaliAuthenticator implements KaliAuthenticatorInterface
      * @var LoggerInterface
      */
     protected $logger;
-
-    /**
-     * @var string
-     */
-    protected $server;
 
     /**
      * @var string
@@ -54,25 +49,18 @@ class KaliAuthenticator implements KaliAuthenticatorInterface
     protected $token;
 
     /**
-     * @param ClientInterface $client
-     * @param string          $server               Kali server
+     * @param Client $client
      * @param string          $publicKey            public key, provided by Kali API
      * @param string          $secretKey            secret key, provided by Kali API
-     * @param string|bool     $certificateAuthority bool, file path, or directory path
      */
     public function __construct(
-        ClientInterface $client,
-        $server,
+        Client $client,
         $publicKey,
-        $secretKey,
-        $certificateAuthority = false
+        $secretKey
     ) {
         $this->client = $client;
-        $this->server = $server;
         $this->publicKey = $publicKey;
         $this->secretKey = $secretKey;
-        $this->client->setBaseUrl($server);
-        $this->client->setSslVerification($certificateAuthority);
     }
 
     /**
@@ -90,6 +78,16 @@ class KaliAuthenticator implements KaliAuthenticatorInterface
     }
 
     /**
+     * Authentification token getter
+     *
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
      * Authentication
      *
      * Strict Oauth2 'client_credentials' authentication.
@@ -100,7 +98,39 @@ class KaliAuthenticator implements KaliAuthenticatorInterface
      */
     public function authenticate()
     {
-        $request = $this->client->get(
+        if ($this->logger) {
+            $this->logger->info("KaliAuthenticator::authenticate()");
+        }
+        $response = $this->request();
+        $json = $response->getBody()->getContents();
+        $data = json_decode($json, true);
+        if (!empty($data['access_token'])) {
+            return $this->token = $data['access_token'];
+        } else {
+            if ($this->logger) {
+                $this->logger->error(
+                    'KaliClient::authenticate',
+                    array(
+                        'status' => $response->getStatusCode(),
+                        'reason' => $response->getReasonPhrase(),
+                        'response' => $data
+                    )
+                );
+            }
+            throw new Exception(
+                'Authentication failed: ' . implode('. ', $data),
+                $response->getStatusCode()
+            );
+        }
+    }
+
+    /**
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     */
+    private function request()
+    {
+        return $this->client->request(
+            'GET',
             sprintf(
                 '%s?client_id=%s&client_secret=%s&grant_type=%s',
                 self::OAUTH_ENDPOINT,
@@ -109,33 +139,10 @@ class KaliAuthenticator implements KaliAuthenticatorInterface
                 self::GRANT_TYPE
             ),
             array(
-                'Content-Type' => 'application/x-www-form-urlencoded',
+                'headers' => array(
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                )
             )
         );
-        $response = $request->send();
-        $data = $response->json();
-        if (!empty($data['access_token'])) {
-            $this->token = $data['access_token'];
-
-            return $this->token;
-        } else {
-            if ($this->logger) {
-                $this->logger->error(
-                    'KaliClient::authenticate',
-                    $data
-                );
-            }
-            throw new Exception('No access token returned on authenticate');
-        }
-    }
-
-    /**
-     * Authentification token getter
-     *
-     * @return string
-     */
-    public function getToken()
-    {
-        return $this->token;
     }
 }

@@ -9,9 +9,9 @@
     }
   ],
   "require": {
-    "php"                      : ">=5.3.",
-    "guzzle/guzzle"            : "3.9.3",
-    "jms/serializer-bundle"    : "1.*"
+    "php"                      : ">=5.5.0",
+    "jms/serializer-bundle"    : "1.*",
+    "guzzlehttp/guzzle"        : "~6.0"
   },
   "require-dev": {
     "symfony/symfony"          : "2.3.*",
