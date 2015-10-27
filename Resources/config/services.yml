@@ -1,5 +1,5 @@
 parameters:
-    meup_kali_client.http_client.class:   Guzzle\Http\Client
+    meup_kali_client.http_client.class:   GuzzleHttp\Client
     meup_kali_client.provider.class:      Meup\Bundle\KaliClientBundle\Provider\KaliProvider
     meup_kali_client.authenticator.class: Meup\Bundle\KaliClientBundle\Provider\KaliAuthenticator
     meup_kali_client.sku.class:           Meup\Bundle\KaliClientBundle\Model\Sku
@@ -9,14 +9,14 @@ parameters:
 services:
     meup_kali_client.http_client:
         class: %meup_kali_client.http_client.class%
+        arguments:
+            - { 'base_uri': %kali_server%, 'http_errors': false }
 
     meup_kali_client.provider:
         class: %meup_kali_client.provider.class%
         arguments:
             - @meup_kali_client.http_client
             - @meup_kali_client.authenticator
-            - %kali_server%
-            - %kali_ssl_cert%
         calls:
             - ['setLogger', [@logger]]
 
@@ -24,10 +24,8 @@ services:
         class: %meup_kali_client.authenticator.class%
         arguments:
             - @meup_kali_client.http_client
-            - %kali_server%
             - %kali_public_key%
             - %kali_secret_key%
-            - %kali_ssl_cert%
         calls:
             - ['setLogger', [@logger]]
 
