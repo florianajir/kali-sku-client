@@ -54,7 +54,7 @@ interface SkuManagerInterface
      *
      * @return SkuInterface
      */
-    public function allocate($project);
+    public function allocate($project = null);
 
     /**
      * @param string $sku
