@@ -103,7 +103,7 @@ class KaliAuthenticator implements KaliAuthenticatorInterface
         }
         $response = $this->request();
         $json = $response->getBody()->getContents();
-        $data = json_decode($json);
+        $data = json_decode($json, true);
         if (!empty($data['access_token'])) {
             return $this->token = $data['access_token'];
         } else {
@@ -117,7 +117,10 @@ class KaliAuthenticator implements KaliAuthenticatorInterface
                     )
                 );
             }
-            throw new Exception('No access token returned on authenticate', $response->getStatusCode());
+            throw new Exception(
+                'Authentication failed: ' . implode('. ', $data),
+                $response->getStatusCode()
+            );
         }
     }
 
