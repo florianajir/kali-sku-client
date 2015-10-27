@@ -1,5 +1,5 @@
 parameters:
-    meup_kali_client.http_client.class:   Guzzle\Http\Client
+    meup_kali_client.http_client.class:   GuzzleHttp\Client
     meup_kali_client.provider.class:      Meup\Bundle\KaliClientBundle\Provider\KaliProvider
     meup_kali_client.authenticator.class: Meup\Bundle\KaliClientBundle\Provider\KaliAuthenticator
     meup_kali_client.sku.class:           Meup\Bundle\KaliClientBundle\Model\Sku
