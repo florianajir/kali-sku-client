@@ -39,24 +39,6 @@ class KaliProviderTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param array<Response|RequestException> $responses
-     *
-     * @return Client
-     */
-    private function mockClient(array $responses = array())
-    {
-        // Create a mock and queue responses.
-        $mock = new MockHandler($responses);
-        $handler = HandlerStack::create($mock);
-        $client = new Client(array(
-            'handler' => $handler,
-            'http_errors' => false
-        ));
-
-        return $client;
-    }
-
-    /**
      * @param bool|true $infoTrace
      * @param string|null $expectedLogLevel
      *
@@ -83,6 +65,24 @@ class KaliProviderTest extends PHPUnit_Framework_TestCase
         }
 
         return $logger;
+    }
+
+    /**
+     * @param array<Response|RequestException> $responses
+     *
+     * @return Client
+     */
+    private function mockClient(array $responses = array())
+    {
+        // Create a mock and queue responses.
+        $mock = new MockHandler($responses);
+        $handler = HandlerStack::create($mock);
+        $client = new Client(array(
+            'handler' => $handler,
+            'http_errors' => false
+        ));
+
+        return $client;
     }
 
     /**
