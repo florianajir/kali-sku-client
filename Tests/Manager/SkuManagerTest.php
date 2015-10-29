@@ -294,6 +294,101 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
     /**
      *
      */
+    public function testUpdateSkuWithConflict()
+    {
+        $project = 'app_name';
+        $type = 'product';
+        $id = 1;
+        $permalink = 'url';
+        $code = '1234567';
+        $sku = new Sku();
+        $sku
+            ->setCode($code)
+            ->setProject($project)
+            ->setForeignType($type)
+            ->setForeignId($id)
+            ->setPermalink($permalink);
+        $provider = $this->getKaliProviderMock();
+        $provider
+            ->expects($this->once())
+            ->method('update')
+            ->with($code, $project, $type, $id, $permalink)
+            ->willReturn(
+                array(
+                    'project' => $project,
+                    'type' => $type,
+                    'id' => $id,
+                    'permalink' => "http://",
+                    'code' => "azertyu"
+                )
+            );
+        $factory = $this->getSkuFactoryMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->willReturn(new Sku());
+        $manager = new SkuManager($provider, $factory, $project);
+        $this->setExpectedException('\Exception');
+        $result = $manager->update($sku, false);
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $result);
+        $this->assertEquals($project, $result->getProject());
+        $this->assertEquals($type, $result->getForeignType());
+        $this->assertEquals($id, $result->getForeignId());
+        $this->assertEquals($permalink, $result->getPermalink());
+        $this->assertEquals($code, $result->getCode());
+    }
+
+    /**
+     *
+     */
+    public function testUpdateSkuWithConflictReturned()
+    {
+        $project = 'app_name';
+        $type = 'product';
+        $id = 1;
+        $permalink = 'url';
+        $permalink2 = 'http://url';
+        $code = '1234567';
+        $code2 = 'azertyu';
+        $sku = new Sku();
+        $sku
+            ->setCode($code)
+            ->setProject($project)
+            ->setForeignType($type)
+            ->setForeignId($id)
+            ->setPermalink($permalink);
+        $provider = $this->getKaliProviderMock();
+        $provider
+            ->expects($this->once())
+            ->method('update')
+            ->with($code, $project, $type, $id, $permalink)
+            ->willReturn(
+                array(
+                    'project' => $project,
+                    'type' => $type,
+                    'id' => $id,
+                    'permalink' => $permalink2,
+                    'code' => $code2
+                )
+            );
+        $factory = $this->getSkuFactoryMock();
+        $factory
+            ->expects($this->once())
+            ->method('create')
+            ->willReturn(new Sku());
+        $manager = new SkuManager($provider, $factory, $project);
+        $result = $manager->update($sku, true);
+        $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $result);
+        $this->assertEquals($project, $result->getProject());
+        $this->assertEquals($type, $result->getForeignType());
+        $this->assertEquals($id, $result->getForeignId());
+        $this->assertEquals($permalink2, $result->getPermalink());
+        $this->assertEquals($code2, $result->getCode());
+    }
+
+    /**
+     *
+     */
     public function testDeleteSkuSucceed()
     {
         $provider = $this->getKaliProviderMock();
