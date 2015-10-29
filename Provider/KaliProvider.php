@@ -112,7 +112,7 @@ class KaliProvider implements KaliProviderInterface
                         array(
                             'method'  => 'get',
                             'status'  => $response->getStatusCode(),
-                            'message' => $response->getMessage(),
+                            'reason' => $response->getReasonPhrase(),
                             'sku'     => $sku
                         )
                     );
@@ -164,7 +164,7 @@ class KaliProvider implements KaliProviderInterface
             self::API_ENDPOINT,
             $project
         );
-        $response = $this->client->request('POST', $uri, ['headers' => $this->getDefaultHeaders()]);
+        $response = $this->client->request('POST', $uri, array('headers' => $this->getDefaultHeaders()));
         if ($response->getStatusCode() !== Codes::HTTP_CREATED) {
             if ($this->logger) {
                 $this->logger->error(
@@ -172,7 +172,7 @@ class KaliProvider implements KaliProviderInterface
                     array(
                         'method'  => 'post',
                         'status'  => $response->getStatusCode(),
-                        'message' => $response->getMessage(),
+                        'reason' => $response->getReasonPhrase(),
                     )
                 );
             }
@@ -194,28 +194,10 @@ class KaliProvider implements KaliProviderInterface
      * @return string
      * @throws Exception
      */
-    public function create($project, $type, $id, $permalink)
+    public function create($project, $type, $id, $permalink = null)
     {
         if ($this->logger) {
             $this->logger->info("KaliProvider::create($project, $type, $id, $permalink)");
-        }
-        if (empty($project)) {
-            if ($this->logger) {
-                $this->logger->critical('project parameter must be set.');
-            }
-            throw new InvalidArgumentException('project parameter must be set');
-        }
-        if (empty($type)) {
-            if ($this->logger) {
-                $this->logger->critical('type parameter must be set.');
-            }
-            throw new InvalidArgumentException('type parameter must be set');
-        }
-        if (empty($id)) {
-            if ($this->logger) {
-                $this->logger->critical('id parameter must be set.');
-            }
-            throw new InvalidArgumentException('id parameter must be set');
         }
         $data = array(
             'sku' => array(
@@ -228,10 +210,10 @@ class KaliProvider implements KaliProviderInterface
         $response = $this->client->request(
             'POST',
             self::API_ENDPOINT . '/',
-            [
+            array(
                 'headers' => $this->getDefaultHeaders(),
                 'json'    => $data
-            ]
+            )
         );
         switch ($response->getStatusCode()) {
             case Codes::HTTP_CREATED:
@@ -280,12 +262,6 @@ class KaliProvider implements KaliProviderInterface
     {
         if ($this->logger) {
             $this->logger->info("KaliProvider::delete($sku)");
-        }
-        if (empty($sku)) {
-            if ($this->logger) {
-                $this->logger->critical('sku parameter must be set.');
-            }
-            throw new InvalidArgumentException('sku parameter must be set');
         }
         $uri = sprintf(
             '%s/%s',
@@ -341,12 +317,6 @@ class KaliProvider implements KaliProviderInterface
         if ($this->logger) {
             $this->logger->info("KaliProvider::disable($sku)");
         }
-        if (empty($sku)) {
-            if ($this->logger) {
-                $this->logger->critical('sku parameter must be set.');
-            }
-            throw new InvalidArgumentException('sku parameter must be set');
-        }
         $uri = sprintf(
             '%s/disable/%s',
             self::API_ENDPOINT,
@@ -355,9 +325,9 @@ class KaliProvider implements KaliProviderInterface
         $response = $this->client->request(
             'PUT',
             $uri,
-            [
+            array(
                 'headers' => $this->getDefaultHeaders()
-            ]
+            )
         );
         switch ($response->getStatusCode()) {
             case Codes::HTTP_OK:
@@ -405,30 +375,6 @@ class KaliProvider implements KaliProviderInterface
         if ($this->logger) {
             $this->logger->info("KaliProvider::update($sku, $project, $type, $id, $permalink)");
         }
-        if (empty($sku)) {
-            if ($this->logger) {
-                $this->logger->critical('sku parameter must be set.');
-            }
-            throw new InvalidArgumentException('sku parameter must be set');
-        }
-        if (empty($project)) {
-            if ($this->logger) {
-                $this->logger->critical('project parameter must be set.');
-            }
-            throw new InvalidArgumentException('project parameter must be set');
-        }
-        if (empty($type)) {
-            if ($this->logger) {
-                $this->logger->critical('type parameter must be set.');
-            }
-            throw new InvalidArgumentException('type parameter must be set');
-        }
-        if (empty($id)) {
-            if ($this->logger) {
-                $this->logger->critical('id parameter must be set.');
-            }
-            throw new InvalidArgumentException('id parameter must be set');
-        }
         $data = array(
             'sku' => array(
                 'project'   => $project,
@@ -444,11 +390,12 @@ class KaliProvider implements KaliProviderInterface
                 self::API_ENDPOINT,
                 $sku
             ),
-            [
+            array(
                 'headers' => $this->getDefaultHeaders(),
                 'json'    => $data
-            ]
+            )
         );
+        $content = $response->getBody()->getContents();
         switch ($response->getStatusCode()) {
             case Codes::HTTP_OK:
                 break;
@@ -457,7 +404,7 @@ class KaliProvider implements KaliProviderInterface
                     $this->logger->warning(
                         'Sku update failed due to existing resource on server.',
                         array(
-                            'existing' => $response->getBody()->getContents()
+                            'existing' => $content
                         )
                     );
                 }
@@ -482,13 +429,13 @@ class KaliProvider implements KaliProviderInterface
                             'status'   => $response->getStatusCode(),
                             'message'  => $response->getReasonPhrase(),
                             'data'     => $data,
-                            'response' => $response->getBody()->getContents()
+                            'response' => $content
                         )
                     );
                 }
                 throw new Exception('Kali response status code not expected.', $response->getStatusCode());
         }
 
-        return $response->getBody()->getContents();
+        return $content;
     }
 }
