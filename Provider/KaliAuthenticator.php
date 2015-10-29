@@ -117,8 +117,11 @@ class KaliAuthenticator implements KaliAuthenticatorInterface
                     )
                 );
             }
+            $message = !empty($data) && is_array($data)
+                ? 'Authentication failed: ' . implode('. ', $data)
+                : 'Authentication failed: No response from server';
             throw new Exception(
-                'Authentication failed: ' . implode('. ', $data),
+                $message,
                 $response->getStatusCode()
             );
         }
