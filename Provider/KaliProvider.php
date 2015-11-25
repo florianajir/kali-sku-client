@@ -82,7 +82,7 @@ class KaliProvider implements KaliProviderInterface
     public function get($sku)
     {
         if ($this->logger) {
-            $this->logger->info("KaliProvider::get($sku)");
+            $this->logger->debug("KaliProvider::get($sku)");
         }
         $uri = sprintf(
             '%s/%s',
@@ -151,7 +151,7 @@ class KaliProvider implements KaliProviderInterface
     public function allocate($project)
     {
         if ($this->logger) {
-            $this->logger->info("KaliProvider::allocate($project)");
+            $this->logger->debug("KaliProvider::allocate($project)");
         }
         if (empty($project)) {
             if ($this->logger) {
@@ -197,7 +197,7 @@ class KaliProvider implements KaliProviderInterface
     public function create($project, $type, $id, $permalink = null)
     {
         if ($this->logger) {
-            $this->logger->info("KaliProvider::create($project, $type, $id, $permalink)");
+            $this->logger->debug("KaliProvider::create($project, $type, $id, $permalink)");
         }
         $data = array(
             'sku' => array(
@@ -261,7 +261,7 @@ class KaliProvider implements KaliProviderInterface
     public function delete($sku)
     {
         if ($this->logger) {
-            $this->logger->info("KaliProvider::delete($sku)");
+            $this->logger->debug("KaliProvider::delete($sku)");
         }
         $uri = sprintf(
             '%s/%s',
@@ -315,7 +315,7 @@ class KaliProvider implements KaliProviderInterface
     public function disable($sku)
     {
         if ($this->logger) {
-            $this->logger->info("KaliProvider::disable($sku)");
+            $this->logger->debug("KaliProvider::disable($sku)");
         }
         $uri = sprintf(
             '%s/disable/%s',
@@ -373,7 +373,7 @@ class KaliProvider implements KaliProviderInterface
     public function update($sku, $project, $type, $id, $permalink)
     {
         if ($this->logger) {
-            $this->logger->info("KaliProvider::update($sku, $project, $type, $id, $permalink)");
+            $this->logger->debug("KaliProvider::update($sku, $project, $type, $id, $permalink)");
         }
         $data = array(
             'sku' => array(

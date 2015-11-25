@@ -99,7 +99,7 @@ class KaliAuthenticator implements KaliAuthenticatorInterface
     public function authenticate()
     {
         if ($this->logger) {
-            $this->logger->info("KaliAuthenticator::authenticate()");
+            $this->logger->debug("KaliAuthenticator::authenticate()");
         }
         $response = $this->request();
         $json = $response->getBody()->getContents();
