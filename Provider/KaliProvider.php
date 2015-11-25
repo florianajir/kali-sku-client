@@ -124,17 +124,19 @@ class KaliProvider implements KaliProviderInterface
     }
 
     /**
-     * @param bool|true $authenticate
+     * Return default headers array (with Authorization Bearer token)
+     *
+     * @param bool|false $forceReauth if set to true, it will request for a new token although it is already available
      *
      * @return array
      */
-    private function getDefaultHeaders($authenticate = true)
+    private function getDefaultHeaders($forceReauth = false)
     {
         $headers = array();
-        if (true === $authenticate) {
-            $token = $this->authenticator->authenticate();
-            $headers['Authorization'] = "Bearer $token";
+        if ($forceReauth || is_null($this->token)) {
+            $this->token = $this->authenticator->authenticate();
         }
+        $headers['Authorization'] = "Bearer {$this->token}";
 
         return $headers;
     }
