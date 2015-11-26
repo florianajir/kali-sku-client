@@ -41,18 +41,11 @@ class KaliProvider implements KaliProviderInterface
     protected $logger;
 
     /**
-     * @var string
-     */
-    protected $token;
-
-    /**
-     * @param Client                     $client        Guzzle http client
+     * @param Client $client Guzzle http client
      * @param KaliAuthenticatorInterface $authenticator kali authenticator service
      */
-    public function __construct(
-        Client $client,
-        KaliAuthenticatorInterface $authenticator
-    ) {
+    public function __construct(Client $client, KaliAuthenticatorInterface $authenticator)
+    {
         $this->client = $client;
         $this->authenticator = $authenticator;
     }
@@ -89,7 +82,7 @@ class KaliProvider implements KaliProviderInterface
             self::API_ENDPOINT,
             $sku
         );
-        $response = $this->client->request('GET', $uri, ['headers' => $this->getDefaultHeaders()]);
+        $response = $this->fetch('GET', $uri);
         switch ($response->getStatusCode()) {
             case Codes::HTTP_OK:
                 break;
@@ -110,10 +103,10 @@ class KaliProvider implements KaliProviderInterface
                     $this->logger->error(
                         'Response status code not expected.',
                         array(
-                            'method'  => 'get',
-                            'status'  => $response->getStatusCode(),
+                            'method' => 'get',
+                            'status' => $response->getStatusCode(),
                             'reason' => $response->getReasonPhrase(),
-                            'sku'     => $sku
+                            'sku' => $sku
                         )
                     );
                 }
@@ -124,21 +117,42 @@ class KaliProvider implements KaliProviderInterface
     }
 
     /**
-     * Return default headers array (with Authorization Bearer token)
+     * @param string $method
+     * @param string $uri
+     * @param array $options
+     *
+     * @return mixed|\Psr\Http\Message\ResponseInterface
+     */
+    private function fetch($method, $uri = null, array $options = [])
+    {
+        if (empty($options['headers']['Authorization'])) {
+            $options['headers']['Authorization'] = $this->getAuthorizationHeader();
+        }
+        $response = $this->client->request($method, $uri, $options);
+        if ($response->getStatusCode() === Codes::HTTP_UNAUTHORIZED) {
+            if ($this->logger) {
+                $this->logger->notice('Token expired, requesting for a new one.');
+            }
+            $options['headers']['Authorization'] = $this->getAuthorizationHeader(true);
+            $response = $this->client->request($method, $uri, $options);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Return Authorization header value (Bearer token)
      *
      * @param bool|false $forceReauth if set to true, it will request for a new token although it is already available
      *
-     * @return array
+     * @return string
      */
-    private function getDefaultHeaders($forceReauth = false)
+    private function getAuthorizationHeader($forceReauth = false)
     {
-        $headers = array();
-        if ($forceReauth || is_null($this->token)) {
-            $this->token = $this->authenticator->authenticate();
+        if ($forceReauth || null === $this->authenticator->getToken()) {
+            $this->authenticator->authenticate();
         }
-        $headers['Authorization'] = "Bearer {$this->token}";
-
-        return $headers;
+        return "Bearer {$this->authenticator->getToken()}";
     }
 
     /**
@@ -166,14 +180,14 @@ class KaliProvider implements KaliProviderInterface
             self::API_ENDPOINT,
             $project
         );
-        $response = $this->client->request('POST', $uri, array('headers' => $this->getDefaultHeaders()));
+        $response = $this->fetch('POST', $uri);
         if ($response->getStatusCode() !== Codes::HTTP_CREATED) {
             if ($this->logger) {
                 $this->logger->error(
                     'Error during sku allocation.',
                     array(
-                        'method'  => 'post',
-                        'status'  => $response->getStatusCode(),
+                        'method' => 'post',
+                        'status' => $response->getStatusCode(),
                         'reason' => $response->getReasonPhrase(),
                     )
                 );
@@ -203,18 +217,17 @@ class KaliProvider implements KaliProviderInterface
         }
         $data = array(
             'sku' => array(
-                'project'   => $project,
-                'type'      => $type,
-                'id'        => $id,
+                'project' => $project,
+                'type' => $type,
+                'id' => $id,
                 'permalink' => $permalink,
             )
         );
-        $response = $this->client->request(
+        $response = $this->fetch(
             'POST',
             self::API_ENDPOINT . '/',
             array(
-                'headers' => $this->getDefaultHeaders(),
-                'json'    => $data
+                'json' => $data
             )
         );
         switch ($response->getStatusCode()) {
@@ -238,10 +251,10 @@ class KaliProvider implements KaliProviderInterface
                     $this->logger->error(
                         'Response status code not expected.',
                         array(
-                            'method'   => 'post',
-                            'status'   => $response->getStatusCode(),
-                            'message'  => $response->getReasonPhrase(),
-                            'data'     => $data,
+                            'method' => 'post',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getReasonPhrase(),
+                            'data' => $data,
                             'response' => $response->getBody()->getContents()
                         )
                     );
@@ -270,12 +283,9 @@ class KaliProvider implements KaliProviderInterface
             self::API_ENDPOINT,
             $sku
         );
-        $response = $this->client->request(
+        $response = $this->fetch(
             'DELETE',
-            $uri,
-            [
-                'headers' => $this->getDefaultHeaders()
-            ]
+            $uri
         );
         switch ($response->getStatusCode()) {
             case Codes::HTTP_NO_CONTENT:
@@ -291,10 +301,10 @@ class KaliProvider implements KaliProviderInterface
                     $this->logger->error(
                         'Response status code not expected.',
                         array(
-                            'method'   => 'post',
-                            'status'   => $response->getStatusCode(),
-                            'message'  => $response->getReasonPhrase(),
-                            'sku'      => $sku,
+                            'method' => 'post',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getReasonPhrase(),
+                            'sku' => $sku,
                             'response' => $response->getBody()->getContents()
                         )
                     );
@@ -324,12 +334,9 @@ class KaliProvider implements KaliProviderInterface
             self::API_ENDPOINT,
             $sku
         );
-        $response = $this->client->request(
+        $response = $this->fetch(
             'PUT',
-            $uri,
-            array(
-                'headers' => $this->getDefaultHeaders()
-            )
+            $uri
         );
         switch ($response->getStatusCode()) {
             case Codes::HTTP_OK:
@@ -345,10 +352,10 @@ class KaliProvider implements KaliProviderInterface
                     $this->logger->error(
                         'Response status code not expected.',
                         array(
-                            'method'   => 'post',
-                            'status'   => $response->getStatusCode(),
-                            'message'  => $response->getReasonPhrase(),
-                            'sku'      => $sku,
+                            'method' => 'post',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getReasonPhrase(),
+                            'sku' => $sku,
                             'response' => $response->getBody()->getContents()
                         )
                     );
@@ -379,13 +386,13 @@ class KaliProvider implements KaliProviderInterface
         }
         $data = array(
             'sku' => array(
-                'project'   => $project,
-                'type'      => $type,
-                'id'        => $id,
+                'project' => $project,
+                'type' => $type,
+                'id' => $id,
                 'permalink' => $permalink,
             )
         );
-        $response = $this->client->request(
+        $response = $this->fetch(
             'PUT',
             sprintf(
                 '%s/%s',
@@ -393,8 +400,7 @@ class KaliProvider implements KaliProviderInterface
                 $sku
             ),
             array(
-                'headers' => $this->getDefaultHeaders(),
-                'json'    => $data
+                'json' => $data
             )
         );
         $content = $response->getBody()->getContents();
@@ -427,10 +433,10 @@ class KaliProvider implements KaliProviderInterface
                     $this->logger->error(
                         'Response status code not expected.',
                         array(
-                            'method'   => 'put',
-                            'status'   => $response->getStatusCode(),
-                            'message'  => $response->getReasonPhrase(),
-                            'data'     => $data,
+                            'method' => 'put',
+                            'status' => $response->getStatusCode(),
+                            'message' => $response->getReasonPhrase(),
+                            'data' => $data,
                             'response' => $content
                         )
                     );
