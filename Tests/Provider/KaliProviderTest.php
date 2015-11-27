@@ -54,7 +54,7 @@ class KaliProviderTest extends PHPUnit_Framework_TestCase
         if (true === $infoTrace) {
             $logger
                 ->expects($this->once())
-                ->method('info')
+                ->method('debug')
             ;
         }
 

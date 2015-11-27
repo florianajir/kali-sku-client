@@ -91,8 +91,8 @@ JSON;
             ->getMock();
 
         $logger
-            ->expects($this->once())
-            ->method('info')
+            ->expects($this->any())
+            ->method('debug')
             ->with('KaliAuthenticator::authenticate()');
 
         if (true === $expectError) {
