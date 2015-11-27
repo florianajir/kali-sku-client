@@ -93,10 +93,6 @@ class KaliProvider implements KaliProviderInterface
 
                 return false;
             case Codes::HTTP_NOT_FOUND:
-                if ($this->logger) {
-                    $this->logger->warning('Sku not found.');
-                }
-
                 return null;
             default:
                 if ($this->logger) {
@@ -129,12 +125,19 @@ class KaliProvider implements KaliProviderInterface
             $options['headers']['Authorization'] = $this->getAuthorizationHeader();
         }
         $response = $this->client->request($method, $uri, $options);
-        if ($response->getStatusCode() === Codes::HTTP_UNAUTHORIZED) {
-            if ($this->logger) {
-                $this->logger->notice('Token expired, requesting for a new one.');
-            }
-            $options['headers']['Authorization'] = $this->getAuthorizationHeader(true);
-            $response = $this->client->request($method, $uri, $options);
+        switch ($response->getStatusCode()) {
+            case Codes::HTTP_UNAUTHORIZED:
+                if ($this->logger) {
+                    $this->logger->notice('Token expired, requesting for a new one.');
+                }
+                $options['headers']['Authorization'] = $this->getAuthorizationHeader(true);
+                $response = $this->client->request($method, $uri, $options);
+                break;
+            case Codes::HTTP_NOT_FOUND:
+                if ($this->logger) {
+                    $this->logger->warning('Sku not found.');
+                }
+                break;
         }
 
         return $response;
@@ -203,26 +206,19 @@ class KaliProvider implements KaliProviderInterface
      * Note: used for one-step sku creation process
      *
      * @param string $project
-     * @param string $type
-     * @param string $id
+     * @param string $objectType
+     * @param string $objectId
      * @param string $permalink
      *
      * @return string
      * @throws Exception
      */
-    public function create($project, $type, $id, $permalink = null)
+    public function create($project, $objectType, $objectId, $permalink = null)
     {
         if ($this->logger) {
-            $this->logger->debug("KaliProvider::create($project, $type, $id, $permalink)");
+            $this->logger->debug("KaliProvider::create($project, $objectType, $objectId, $permalink)");
         }
-        $data = array(
-            'sku' => array(
-                'project' => $project,
-                'type' => $type,
-                'id' => $id,
-                'permalink' => $permalink,
-            )
-        );
+        $data = $this->prepareSkuData($project, $objectType, $objectId, $permalink);
         $response = $this->fetch(
             'POST',
             self::API_ENDPOINT . '/',
@@ -291,10 +287,6 @@ class KaliProvider implements KaliProviderInterface
             case Codes::HTTP_NO_CONTENT:
                 break;
             case Codes::HTTP_NOT_FOUND:
-                if ($this->logger) {
-                    $this->logger->warning('Sku not found.');
-                }
-
                 return false;
             default:
                 if ($this->logger) {
@@ -334,18 +326,11 @@ class KaliProvider implements KaliProviderInterface
             self::API_ENDPOINT,
             $sku
         );
-        $response = $this->fetch(
-            'PUT',
-            $uri
-        );
+        $response = $this->fetch('PUT', $uri);
         switch ($response->getStatusCode()) {
             case Codes::HTTP_OK:
                 break;
             case Codes::HTTP_NOT_FOUND:
-                if ($this->logger) {
-                    $this->logger->warning('Sku not found.');
-                }
-
                 return false;
             default:
                 if ($this->logger) {
@@ -372,26 +357,19 @@ class KaliProvider implements KaliProviderInterface
      *
      * @param string $sku
      * @param string $project
-     * @param string $type
-     * @param string $id
+     * @param string $objectType
+     * @param string $objectId
      * @param string $permalink
      *
      * @return string
      * @throws Exception
      */
-    public function update($sku, $project, $type, $id, $permalink)
+    public function update($sku, $project, $objectType, $objectId, $permalink)
     {
         if ($this->logger) {
-            $this->logger->debug("KaliProvider::update($sku, $project, $type, $id, $permalink)");
+            $this->logger->debug("KaliProvider::update($sku, $project, $objectType, $objectId, $permalink)");
         }
-        $data = array(
-            'sku' => array(
-                'project' => $project,
-                'type' => $type,
-                'id' => $id,
-                'permalink' => $permalink,
-            )
-        );
+        $data = $this->prepareSkuData($project, $objectType, $objectId, $permalink);
         $response = $this->fetch(
             'PUT',
             sprintf(
@@ -418,10 +396,6 @@ class KaliProvider implements KaliProviderInterface
                 }
                 break;
             case Codes::HTTP_NOT_FOUND:
-                if ($this->logger) {
-                    $this->logger->warning('Sku not found.');
-                }
-
                 return false;
             case Codes::HTTP_BAD_REQUEST:
                 if ($this->logger) {
@@ -445,5 +419,27 @@ class KaliProvider implements KaliProviderInterface
         }
 
         return $content;
+    }
+
+    /**
+     * Prepare SKU array data from a list of parameter
+     *
+     * @param string $project
+     * @param string $objectType
+     * @param string $objectId
+     * @param string $permalink
+     *
+     * @return array
+     */
+    private function prepareSkuData($project, $objectType, $objectId, $permalink)
+    {
+        return array(
+            'sku' => array(
+                'project' => $project,
+                'type' => $objectType,
+                'id' => $objectId,
+                'permalink' => $permalink,
+            )
+        );
     }
 }
