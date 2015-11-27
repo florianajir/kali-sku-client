@@ -26,11 +26,18 @@ class SkuFactory
     protected $class;
 
     /**
-     * @param string $classname
+     * @var string
      */
-    public function __construct($classname)
+    protected $appName;
+
+    /**
+     * @param string $classname
+     * @param string $appName
+     */
+    public function __construct($classname, $appName)
     {
         $this->class = new ReflectionClass($classname);
+        $this->appName = $appName;
     }
 
     /**
@@ -38,6 +45,6 @@ class SkuFactory
      */
     public function create()
     {
-        return $this->class->newInstance();
+        return $this->class->newInstance($this->appName);
     }
 }

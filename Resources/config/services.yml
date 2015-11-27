@@ -33,6 +33,7 @@ services:
         class: %meup_kali_client.sku_factory.class%
         arguments:
             - %meup_kali_client.sku.class%
+            - %app_name%
 
     meup_kali_client.sku_manager:
         class: %meup_kali_client.sku_manager.class%

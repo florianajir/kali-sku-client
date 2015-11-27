@@ -48,6 +48,16 @@ class Sku implements SkuInterface
     protected $active;
 
     /**
+     * Sku constructor.
+     *
+     * @param string $project
+     */
+    public function __construct($project)
+    {
+        $this->project = $project;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getCode()
