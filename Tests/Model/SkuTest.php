@@ -22,13 +22,13 @@ class SkuTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstructor()
     {
-        $sku = new Sku();
+        $sku = new Sku('test');
         $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $sku);
     }
 
     public function testAccessors()
     {
-        $sku = new Sku();
+        $sku = new Sku('test');
         $sku
             ->setCode('0123456789')
             ->setForeignId('0123456789')
@@ -49,7 +49,7 @@ class SkuTest extends \PHPUnit_Framework_TestCase
      */
     public function testSerialize()
     {
-        $sku = new Sku();
+        $sku = new Sku('test');
         $sku
             ->setCode('0123456789')
             ->setForeignId('0123456789')
@@ -70,7 +70,7 @@ class SkuTest extends \PHPUnit_Framework_TestCase
 
     public function testActivation()
     {
-        $sku = new Sku();
+        $sku = new Sku('test');
         $sku->setActive(true);
         $this->assertTrue($sku->isActive());
         $sku->setActive(false);
@@ -90,7 +90,7 @@ class SkuTest extends \PHPUnit_Framework_TestCase
 }
 JSON;
 
-        $sku = new Sku();
+        $sku = new Sku('test');
         $result = $sku->unserialize($data);
         $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $result);
         $this->assertEquals($result, $sku);

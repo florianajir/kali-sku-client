@@ -540,4 +540,22 @@ class KaliProviderTest extends PHPUnit_Framework_TestCase
         $result = $provider->update('sku', 'project', 'type', 'id', 'permalink');
         $this->assertFalse($result);
     }
+
+    public function testDeleteUnauthorized()
+    {
+        $responses = array(
+            new Response(Codes::HTTP_UNAUTHORIZED),
+            new Response(Codes::HTTP_NO_CONTENT)
+        );
+        $logger = $this->mockLogger('notice');
+        $client = $this->mockClient($responses);
+        $authenticator = $this->mockAuthenticator();
+        $provider = new KaliProvider(
+            $client,
+            $authenticator
+        );
+        $provider->setLogger($logger);
+        $result = $provider->delete('sku');
+        $this->assertTrue($result);
+    }
 }

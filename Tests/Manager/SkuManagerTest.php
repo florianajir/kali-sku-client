@@ -54,7 +54,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $factory
             ->expects($this->once())
             ->method('create')
-            ->willReturn(new Sku());
+            ->willReturn(new Sku($appName));
         $manager = new SkuManager($provider, $factory, $appName);
         $data = $manager->allocate();
         $this->assertNotNull($data);
@@ -84,7 +84,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $factory
             ->expects($this->once())
             ->method('create')
-            ->willReturn(new Sku());
+            ->willReturn(new Sku($appName));
         $manager = new SkuManager($provider, $factory);
         $data = $manager->allocate($appName);
         $this->assertEquals($appName, $data->getProject());
@@ -126,7 +126,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $factory
             ->expects($this->once())
             ->method('create')
-            ->willReturn(new Sku());
+            ->willReturn(new Sku('app_name'));
         $manager = new SkuManager($provider, $factory, 'app_name');
         $result = $manager->get($code);
         $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\SkuInterface', $result);
@@ -161,7 +161,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $id = 1;
         $permalink = 'url';
         $code = '1234567';
-        $sku = new Sku();
+        $sku = new Sku('test');
         $sku
             ->setProject($project)
             ->setForeignType($type)
@@ -185,7 +185,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $factory
             ->expects($this->once())
             ->method('create')
-            ->willReturn(new Sku());
+            ->willReturn(new Sku($project));
         $manager = new SkuManager($provider, $factory, 'app_name');
         $result = $manager->create($sku);
         $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $result);
@@ -202,7 +202,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
     public function testCreateSkuWithoutResponse()
     {
         $project = 'app_name';
-        $sku = new Sku();
+        $sku = new Sku($project);
         $sku->setProject($project);
         $provider = $this->getKaliProviderMock();
         $provider
@@ -226,7 +226,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $id = 1;
         $permalink = 'url';
         $code = '1234567';
-        $sku = new Sku();
+        $sku = new Sku($project);
         $sku
             ->setCode($code)
             ->setProject($project)
@@ -251,7 +251,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $factory
             ->expects($this->once())
             ->method('create')
-            ->willReturn(new Sku());
+            ->willReturn(new Sku($project));
         $manager = new SkuManager($provider, $factory, 'app_name');
         $result = $manager->update($sku);
         $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $result);
@@ -272,7 +272,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $id = 1;
         $permalink = 'url';
         $code = '1234567';
-        $sku = new Sku();
+        $sku = new Sku($project);
         $sku
             ->setCode($code)
             ->setProject($project)
@@ -301,7 +301,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $id = 1;
         $permalink = 'url';
         $code = '1234567';
-        $sku = new Sku();
+        $sku = new Sku($project);
         $sku
             ->setCode($code)
             ->setProject($project)
@@ -326,7 +326,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $factory
             ->expects($this->once())
             ->method('create')
-            ->willReturn(new Sku());
+            ->willReturn(new Sku($project));
         $manager = new SkuManager($provider, $factory, $project);
         $this->setExpectedException('\Exception');
         $result = $manager->update($sku, false);
@@ -350,7 +350,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $permalink2 = 'http://url';
         $code = '1234567';
         $code2 = 'azertyu';
-        $sku = new Sku();
+        $sku = new Sku($project);
         $sku
             ->setCode($code)
             ->setProject($project)
@@ -375,7 +375,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $factory
             ->expects($this->once())
             ->method('create')
-            ->willReturn(new Sku());
+            ->willReturn(new Sku($project));
         $manager = new SkuManager($provider, $factory, $project);
         $result = $manager->update($sku, true);
         $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $result);
@@ -438,7 +438,7 @@ class SkuManagerTest extends PHPUnit_Framework_TestCase
         $factory
             ->expects($this->once())
             ->method('create')
-            ->willReturn(new Sku());
+            ->willReturn(new Sku('app_name'));
         $manager = new SkuManager($provider, $factory, 'app_name');
         $result = $manager->disable($code);
         $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $result);

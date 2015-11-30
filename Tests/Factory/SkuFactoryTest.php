@@ -21,7 +21,7 @@ class SkuFactoryTest extends \PHPUnit_Framework_TestCase
 {
     public function testCreateSkuObject()
     {
-        $factory = new SkuFactory('Meup\Bundle\KaliClientBundle\Model\Sku');
+        $factory = new SkuFactory('Meup\Bundle\KaliClientBundle\Model\Sku', 'test');
 
         $this->assertInstanceOf('Meup\Bundle\KaliClientBundle\Model\Sku', $factory->create());
     }
