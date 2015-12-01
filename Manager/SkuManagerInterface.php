@@ -40,7 +40,7 @@ interface SkuManagerInterface
      *
      * @return SkuInterface
      */
-    public function update(SkuInterface $sku, $returnExisting);
+    public function update(SkuInterface $sku, $returnExisting = false);
 
     /**
      * @param string $sku
